@@ -1,6 +1,6 @@
 {
   "name": "@flarenetwork/flare-stake-tool",
-  "version": "4.2.2",
+  "version": "4.2.3-rc.0",
   "description": "Utilities for staking on the Flare network",
   "bin": {
     "flare-stake-tool": "bin/flare-stake-tool"
@@ -34,6 +34,7 @@
     "@ethereumjs/rlp": "^5.0.1",
     "@ethereumjs/tx": "^5.0.0",
     "@flarenetwork/flarejs": "^4.1.1",
+    "@ledgerhq/cryptoassets": "13.33.0",
     "@ledgerhq/hw-app-eth": "^6.42.0",
     "@ledgerhq/hw-transport-node-hid": "^6.29.5",
     "@ledgerhq/hw-transport-webhid": "^6.29.4",
@@ -45,6 +46,7 @@
     "bech32": "^2.0.0",
     "bn.js": "^5.2.1",
     "buffer": "^6.0.3",
+    "chalk": "^4.1.2",
     "clear": "^0.1.0",
     "commander": "^13.1.0",
     "dotenv": "^16.4.7",
@@ -58,8 +60,7 @@
     "rimraf": "^5.0.1",
     "typescript": "^5.8.2",
     "web3": "^4.16.0",
-    "web3-utils": "^4.3.3",
-    "chalk": "^4.1.2"
+    "web3-utils": "^4.3.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
