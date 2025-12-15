@@ -1,3 +1,6 @@
+include:
+  - component: $CI_SERVER_FQDN/flarenetwork/infra-public/ci-components/dependency-track@~latest
+
 variables:
   PATTERN_FULL: '^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-(?:(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\.(?:0|[1-9]\d*|\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\+(?:[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*))?$'
   PATTERN_SEMI: '^v(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)$'
@@ -15,13 +18,19 @@ variables:
     - pver=$(echo "v$(jq -r .version package.json)")
     - if [ $pver != $CI_COMMIT_TAG ]; then echo "Tag and package.json versions do not match"; exit 1; fi;
 
+# https://docs.npmjs.com/trusted-publishers#gitlab-cicd-configuration
 .publish-npm_template:
   image: node:22
+  id_tokens:
+    NPM_ID_TOKEN:
+      aud: "npm:registry.npmjs.org"
+    SIGSTORE_ID_TOKEN:
+      aud: sigstore
   script:
     - apt-get update
     - apt-get install -y gettext
-    - envsubst <<< '//registry.npmjs.org/:_authToken=$AUTH_TOKEN' > .npmrc
     - result=$(grep -Pc "$PATTERN_SEMI" <<< "$CI_COMMIT_TAG") || true
+    - yarn global add npm@latest
     - yarn install --frozen-lockfile
     - yarn build
     - if [ ! -d dist ] || [ ! -f dist/src/run.js ]; then echo "Dist folder or dist/src/run.js missing"; exit 1; fi;
@@ -31,7 +40,9 @@ variables:
     - if [ $result -eq 1 ]; then npm publish; else npm publish --tag beta; fi;
 
 stages:
+  - sbom
   - publish
+
 
 check-tag:
   stage: publish
