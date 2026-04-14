@@ -1,3 +1,19 @@
+<div align="center">
+  <a href="https://flare.network/" target="blank">
+    <img src="https://content.flare.network/Flare-2.svg" width="300" alt="Flare Logo" />
+  </a>
+  <br />
+  Utilities for staking on the Flare network
+  <br />
+  <a href="#flare-p-chain-staking-tool">About</a>
+  ·
+  <a href="CONTRIBUTING.md">Contributing</a>
+  ·
+  <a href="SECURITY.md">Security</a>
+  ·
+  <a href="CHANGELOG.md">Changelog</a>
+</div>
+
 # Flare P-chain Staking Tool
 
 This repo contains a tool for staking assets.
