@@ -8,10 +8,10 @@ export async function isEthereumApp() {
   let eth = false;
   await _connect(async (app) => {
     try {
-      let info = await app.getAppConfiguration();
+      const info = await app.getAppConfiguration();
       console.log(info);
       eth = true;
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.log(e);
     }
   });
@@ -52,7 +52,7 @@ export async function getPAddress(bip44Path: string, hrp: string, display: boole
 }
 
 export async function signPersonalMessage(bip44Path: string, message: string): Promise<string> {
-  let messageHex = utils.toHex(Buffer.from(message, "utf-8"), false);
+  const messageHex = utils.toHex(Buffer.from(message, "utf-8"), false);
   let response: Signature | undefined;
   await _connect(async (app) => {
     response = await app.signPersonalMessage(bip44Path, messageHex);
@@ -63,16 +63,16 @@ export async function signPersonalMessage(bip44Path: string, message: string): P
   if (!response.r || !response.s || !response.v) {
     throw new Error("Failed to get signature from ledger device");
   }
-  let r = Buffer.from(utils.toHex(response.r, false), "hex");
-  let s = Buffer.from(utils.toHex(response.s, false), "hex");
-  let v = Buffer.from(response.v.toString(16), "hex");
-  let signature = utils.toHex(Buffer.concat([r, s, v]), false);
+  const r = Buffer.from(utils.toHex(response.r, false), "hex");
+  const s = Buffer.from(utils.toHex(response.s, false), "hex");
+  const v = Buffer.from(response.v.toString(16), "hex");
+  const signature = utils.toHex(Buffer.concat([r, s, v]), false);
   return signature;
 }
 
 export async function signEvmTransaction(bip44Path: string, txHex: string): Promise<string> {
-  let rawTx = utils.toHex(txHex, false);
-  let resolution = await ledgerService.resolveTransaction(rawTx, {}, {});
+  const rawTx = utils.toHex(txHex, false);
+  const resolution = await ledgerService.resolveTransaction(rawTx, {}, {});
   let response: Signature | undefined;
   await _connect(async (app) => {
     response = await app.signTransaction(bip44Path, rawTx, resolution);
@@ -83,23 +83,23 @@ export async function signEvmTransaction(bip44Path: string, txHex: string): Prom
   if (!response.r || !response.s || !response.v) {
     throw new Error("Failed to get signature from ledger device");
   }
-  let r = Buffer.from(utils.toHex(response.r, false), "hex");
-  let s = Buffer.from(utils.toHex(response.s, false), "hex");
+  const r = Buffer.from(utils.toHex(response.r, false), "hex");
+  const s = Buffer.from(utils.toHex(response.s, false), "hex");
   let recoveryParam = parseInt(utils.toHex(response.v, false), 16);
-  if (recoveryParam == 0 || recoveryParam == 1) {
+  if (recoveryParam === 0 || recoveryParam === 1) {
     recoveryParam += 27;
   } else if (recoveryParam > 28) {
-    recoveryParam = recoveryParam % 2 == 1 ? 27 : 28;
+    recoveryParam = recoveryParam % 2 === 1 ? 27 : 28;
   }
-  let v = Buffer.from(recoveryParam.toString(16), "hex");
-  let signature = utils.toHex(Buffer.concat([r, s, v]), false);
+  const v = Buffer.from(recoveryParam.toString(16), "hex");
+  const signature = utils.toHex(Buffer.concat([r, s, v]), false);
   return signature;
 }
 
 async function _connect(execute: (app: EthApp) => Promise<void>): Promise<void> {
   let eth;
   try {
-    let transport = await TransportNodeHid.open(undefined);
+    const transport = await TransportNodeHid.open(undefined);
     eth = new EthApp(transport);
     await execute(eth);
   } finally {

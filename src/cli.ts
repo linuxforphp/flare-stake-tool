@@ -104,15 +104,15 @@ export function cli(program: Command): void {
     .action(async (type: string) => {
       const options = getOptions(program, program.opts());
       const ctx = await contextFromOptions(options);
-      if (type == "addresses") {
+      if (type === "addresses") {
         logAddressInfo(ctx);
-      } else if (type == "balance") {
+      } else if (type === "balance") {
         await logBalanceInfo(ctx);
-      } else if (type == "network") {
+      } else if (type === "network") {
         logNetworkInfo(ctx);
-      } else if (type == "validators") {
+      } else if (type === "validators") {
         await logValidatorInfo(ctx);
-      } else if (type == "mirror") {
+      } else if (type === "mirror") {
         await logMirrorFundInfo(ctx);
       } else {
         logError(`Unknown information type ${type}`);
@@ -175,7 +175,7 @@ export function cli(program: Command): void {
       if (typeof options.transactionId !== "string") {
         throw new Error("Option --blind must be a string");
       }
-      if (type == "sign") {
+      if (type === "sign") {
         if (typeof options.ctxFile !== "string") {
           throw new Error("Option --ctx-file must be a string");
         }
@@ -184,7 +184,7 @@ export function cli(program: Command): void {
         } else {
           await signForDefi(options.transactionId, options.ctxFile);
         }
-      } else if (type == "fetch") {
+      } else if (type === "fetch") {
         if (options.evmTx) {
           await fetchForDefiTx(options.transactionId, true);
         } else {
@@ -329,12 +329,12 @@ export async function contextFromOptions(options: OptionValues): Promise<Context
  */
 export function networkFromOptions(options: OptionValues): string {
   let network = options.network as string;
-  if (network == undefined) {
+  if (network === undefined) {
     try {
       network = networkFromContextFile(options.ctxFile as string);
-    } catch (e: any) {
+    } catch (e: unknown) {
       network = "flare";
-      logError(`Error ${e}. No network was passed and no context file was found. Defaulting to flare network`);
+      logError(`Error ${String(e)}. No network was passed and no context file was found. Defaulting to flare network`);
     }
   }
   logInfo(`Using network: ${network}`);
@@ -889,7 +889,7 @@ async function cliBuildAndSendTxUsingLedger(
     }
     const amount = toBN(params.amount);
     if (!amount) throw new Error(`Amount is invalid: ${params.amount}`);
-    let tp: ExportCTxParams = {
+    const tp: ExportCTxParams = {
       amount: amount,
       exportFee: toBN(params.fee),
       network: ctx.config.hrp,
@@ -899,7 +899,7 @@ async function cliBuildAndSendTxUsingLedger(
     await flare.exportCP(tp, sign);
     return;
   } else if (transactionType === "importCP") {
-    let tp: ImportPTxParams = {
+    const tp: ImportPTxParams = {
       network: ctx.config.hrp,
       type: transactionType,
       publicKey: getPublicKeyFromPair(ctx.publicKey),
@@ -907,7 +907,7 @@ async function cliBuildAndSendTxUsingLedger(
     await flare.importCP(tp, sign);
     return;
   } else if (transactionType === "exportPC") {
-    let tp: ExportPTxParams = {
+    const tp: ExportPTxParams = {
       amount: toBN(params.amount),
       network: ctx.config.hrp,
       type: transactionType,
@@ -916,7 +916,7 @@ async function cliBuildAndSendTxUsingLedger(
     await flare.exportPC(tp, sign);
     return;
   } else if (transactionType === "importPC") {
-    let tp: ImportCTxParams = {
+    const tp: ImportCTxParams = {
       importFee: toBN(params.fee),
       network: ctx.config.hrp,
       type: transactionType,
@@ -945,7 +945,7 @@ async function cliBuildAndSendTxUsingLedger(
         `popBlsSignature is required for stake transaction. Use --pop-bls-signature <popBlsSignature> to specify the BLS signature`
       );
     }
-    let tp: ValidatorPTxParams = {
+    const tp: ValidatorPTxParams = {
       network: ctx.config.hrp,
       type: transactionType,
       publicKey: getPublicKeyFromPair(ctx.publicKey),
@@ -974,7 +974,7 @@ async function cliBuildAndSendTxUsingLedger(
     if (!params.endTime) {
       throw new Error(`endTime is required for delegate transaction. Use --end-time <endTime> to specify the end time`);
     }
-    let tp: DelegatorPTxParams = {
+    const tp: DelegatorPTxParams = {
       network: ctx.config.hrp,
       type: transactionType,
       publicKey: getPublicKeyFromPair(ctx.publicKey),

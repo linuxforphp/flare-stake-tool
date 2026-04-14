@@ -8,6 +8,8 @@
   "scripts": {
     "tsc": "tsc",
     "build": "rimraf dist/ && tsc -b",
+    "lint:check": "eslint \"src/**/*.ts\"",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "format:check": "prettier --check \"src/**/*.ts\" \"eslint.config.mjs\"",
     "format:fix": "prettier --write \"src/**/*.ts\" \"eslint.config.mjs\"",
     "interactive": "bin/flare-stake-tool interactive"
@@ -64,16 +66,16 @@
     "web3-utils": "^4.3.3"
   },
   "devDependencies": {
+    "@eslint/compat": "^2.0.5",
     "@eslint/js": "^9.26.0",
+    "@flarenetwork/eslint-config-flare": "^0.0.2",
     "@flarenetwork/prettier-config-flare": "^0.0.3",
     "@types/clear": "^0.1.2",
     "@types/elliptic": "^6.4.15",
     "@types/figlet": "^1.5.6",
     "@types/inquirer": "9.0.3",
-    "@typescript-eslint/eslint-plugin": "^8.17.0",
-    "@typescript-eslint/parser": "^8.17.0",
     "eslint": "^9.26.0",
-    "globals": "^16.1.0",
+    "eslint-config-prettier": "^10.1.8",
     "prettier": "^3.8.2",
     "prettier-plugin-solidity": "^2.3.1",
     "rimraf": "^5.0.1",
