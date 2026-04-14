@@ -30,9 +30,9 @@ variables:
     - apt-get update
     - apt-get install -y gettext
     - result=$(grep -Pc "$PATTERN_SEMI" <<< "$CI_COMMIT_TAG") || true
-    - yarn global add npm@latest
-    - yarn install --frozen-lockfile
-    - yarn build
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+    - pnpm build
     - if [ ! -d dist ] || [ ! -f dist/src/run.js ]; then echo "Dist folder or dist/src/run.js missing"; exit 1; fi;
     - npm pack
     - tar -xzf flarenetwork-flare-stake-tool-*.tgz

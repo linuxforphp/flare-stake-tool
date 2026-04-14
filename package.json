@@ -7,7 +7,7 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "build": "rimraf dist/ && yarn tsc -b",
+    "build": "rimraf dist/ && tsc -b",
     "interactive": "bin/flare-stake-tool interactive"
   },
   "repository": {
@@ -57,8 +57,6 @@
     "figlet": "^1.6.0",
     "inquirer": "8.0",
     "node-fetch": "^3.3.2",
-    "rimraf": "^5.0.1",
-    "typescript": "^5.8.2",
     "web3": "^4.16.0",
     "web3-utils": "^4.3.3"
   },
@@ -72,12 +70,27 @@
     "@typescript-eslint/parser": "^8.17.0",
     "eslint": "^9.26.0",
     "globals": "^16.1.0",
+    "rimraf": "^5.0.1",
+    "typescript": "^5.8.2",
     "typescript-eslint": "^8.32.0"
   },
-  "resolutions": {
-    "chalk": "4.1.2"
+  "pnpm": {
+    "overrides": {
+      "chalk": "4.1.2"
+    },
+    "onlyBuiltDependencies": [
+      "@stellar/stellar-sdk",
+      "blake-hash",
+      "keccak",
+      "node-hid",
+      "protobufjs",
+      "secp256k1",
+      "tiny-secp256k1",
+      "usb"
+    ]
   },
   "engines": {
     "node": ">=24.0.0"
-  }
+  },
+  "packageManager": "pnpm@10.33.0+sha512.10568bb4a6afb58c9eb3630da90cc9516417abebd3fabbe6739f0ae795728da1491e9db5a544c76ad8eb7570f5c4bb3d6c637b2cb41bfdcdb47fa823c8649319"
 }

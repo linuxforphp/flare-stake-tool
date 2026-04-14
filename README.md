@@ -29,7 +29,7 @@ This tool also supports moving assets between the C- and P-chains and back.
 
 ## Installation
 
-There are two ways to install the tool. Unless you plan to contribute to this repository, We recommend using `yarn` and `node` with version >= 24.0.0.
+There are two ways to install the tool. Unless you plan to contribute to this repository, We recommend using `pnpm` and `node` with version >= 24.0.0.
 
 ### Using npm
 
@@ -45,7 +45,7 @@ For developers, first clone the repo with
 git clone https://github.com/flare-foundation/flare-stake-tool.git
 ```
 
-then run `yarn` and `yarn build` inside the cloned repo folder, and follow the rest of this guide from the repo folder using `bin/flare-stake-tool` instead of just `flare-stake-tool`.
+then run `pnpm install` and `pnpm build` inside the cloned repo folder, and follow the rest of this guide from the repo folder using `bin/flare-stake-tool` instead of just `flare-stake-tool`.
 
 ## Setting up your environment
 

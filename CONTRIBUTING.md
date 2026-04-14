@@ -36,18 +36,18 @@ also welcome.
 ## Dev environment
 
 - [Node.js](https://nodejs.org/) >= 24.0.0
-- [Yarn](https://yarnpkg.com/)
+- [pnpm](https://pnpm.io/)
 
 ```bash
 git clone https://github.com/flare-foundation/flare-stake-tool.git
 cd flare-stake-tool
-yarn install
+pnpm install
 ```
 
 To compile TypeScript:
 
 ```bash
-yarn build
+pnpm build
 ```
 
 ## Linting and formatting
@@ -58,25 +58,25 @@ This project uses [ESLint](https://eslint.org/) and
 Lint all source files:
 
 ```bash
-yarn lint:check
+pnpm lint:check
 ```
 
 Lint and auto-fix:
 
 ```bash
-yarn lint:fix
+pnpm lint:fix
 ```
 
 Check formatting:
 
 ```bash
-yarn format:check
+pnpm format:check
 ```
 
 Format all source files:
 
 ```bash
-yarn format:fix
+pnpm format:fix
 ```
 
 ## Testing
@@ -84,13 +84,13 @@ yarn format:fix
 Run the test suite:
 
 ```bash
-yarn test
+pnpm test
 ```
 
 Run with coverage report:
 
 ```bash
-yarn test:coverage
+pnpm test:coverage
 ```
 
 ## Release process
