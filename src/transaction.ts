@@ -45,7 +45,7 @@ export async function exportCP(ctx: Context, params: FlareTxParams) {
   }
   const txCount = await provider.getTransactionCount(ctx.cAddressHex);
   const baseFee = await evmapi.getBaseFee();
-  const fee = !params.fee || BigInt(params.fee) == 0n || BigInt(params.fee) < baseFee ? baseFee : BigInt(params.fee);
+  const fee = !params.fee || BigInt(params.fee) === 0n || BigInt(params.fee) < baseFee ? baseFee : BigInt(params.fee);
   const exportTx = evm.newExportTxFromBaseFee(
     context,
     fee / BigInt(FLR),
@@ -188,7 +188,7 @@ export async function importPC(ctx: Context, params: FlareTxParams) {
     addresses: [ctx.cAddressBech32],
   });
   const baseFee = await evmapi.getBaseFee();
-  const fee = !params.fee || BigInt(params.fee) == 0n || BigInt(params.fee) < baseFee ? baseFee : BigInt(params.fee);
+  const fee = !params.fee || BigInt(params.fee) === 0n || BigInt(params.fee) < baseFee ? baseFee : BigInt(params.fee);
   const tx = evm.newImportTxFromBaseFee(
     context,
     futils.hexToBuffer(ctx.cAddressHex),
@@ -248,7 +248,7 @@ export async function addValidator(ctx: Context, params: FlareTxParams) {
 
   const pk = Buffer.concat(ctx.publicKey).toString("hex");
   const account = _getAccount(ctx.network, pk);
-  let stakes = await chain.getPStakes(account.network);
+  const stakes = await chain.getPStakes(account.network);
   await _checkNumberOfStakes(account, params.nodeId, new BN(start.toString()), new BN(params.endTime), stakes);
 
   let tx: UnsignedTx;
@@ -333,7 +333,7 @@ export async function addDelegator(ctx: Context, params: FlareTxParams) {
 
   const pk = Buffer.concat(ctx.publicKey).toString("hex");
   const account = _getAccount(ctx.network, pk);
-  let stakes = await chain.getPStakes(account.network);
+  const stakes = await chain.getPStakes(account.network);
   await _checkNumberOfStakes(account, params.nodeId, new BN(start.toString()), new BN(params.endTime), stakes);
   await _checkNodeId(account, params.nodeId, stakes);
 

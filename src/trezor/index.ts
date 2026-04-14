@@ -28,7 +28,7 @@ let initialized = false;
 export async function getPublicKey(bip44Path: string): Promise<string> {
   _initialize();
 
-  let response = await TrezorConnect.getPublicKey({ path: bip44Path, showOnTrezor: false });
+  const response = await TrezorConnect.getPublicKey({ path: bip44Path, showOnTrezor: false });
   if (response.success) {
     return response.payload.publicKey;
   } else {
@@ -39,9 +39,9 @@ export async function getPublicKey(bip44Path: string): Promise<string> {
 export async function ethereumSignMessage(bip44Path: string, message: string): Promise<string> {
   _initialize();
 
-  let response = await TrezorConnect.ethereumSignMessage({ path: bip44Path, message: message, hex: false });
+  const response = await TrezorConnect.ethereumSignMessage({ path: bip44Path, message: message, hex: false });
   if (response.success) {
-    let signature = utils.toHex(response.payload.signature, true);
+    const signature = utils.toHex(response.payload.signature, true);
     return signature;
   } else {
     throw new Error(`Failed to sign message on trezor: ${response.payload.error}, code ${response.payload.code}`);
@@ -51,8 +51,8 @@ export async function ethereumSignMessage(bip44Path: string, message: string): P
 export async function signEvmTransaction(bip44Path: string, txHex: string): Promise<string> {
   _initialize();
 
-  let tx = TransactionFactory.fromSerializedData(utils.toBuffer(txHex));
-  let btx = {
+  const tx = TransactionFactory.fromSerializedData(utils.toBuffer(txHex));
+  const btx = {
     to: tx.to ? tx.to.toString() : "0x0",
     value: tx.value.toString(16),
     data: utils.toHex(tx.data, true),
@@ -82,22 +82,22 @@ export async function signEvmTransaction(bip44Path: string, txHex: string): Prom
   } else {
     throw new Error("Unsupported EVM transaction type");
   }
-  let response = await TrezorConnect.ethereumSignTransaction({
+  const response = await TrezorConnect.ethereumSignTransaction({
     path: bip44Path,
     transaction,
   });
   if (response.success) {
-    let r = Buffer.from(utils.toHex(response.payload.r, false), "hex");
-    let s = Buffer.from(utils.toHex(response.payload.s, false), "hex");
+    const r = Buffer.from(utils.toHex(response.payload.r, false), "hex");
+    const s = Buffer.from(utils.toHex(response.payload.s, false), "hex");
     let recoveryParam = parseInt(utils.toHex(response.payload.v, false), 16);
     if (recoveryParam > 28) {
       recoveryParam -= 8 + 2 * chainId;
     }
-    if (recoveryParam == 0 || recoveryParam == 1) {
+    if (recoveryParam === 0 || recoveryParam === 1) {
       recoveryParam += 27;
     }
-    let v = Buffer.from(recoveryParam.toString(16), "hex");
-    let signature = utils.toHex(Buffer.concat([r, s, v]), false);
+    const v = Buffer.from(recoveryParam.toString(16), "hex");
+    const signature = utils.toHex(Buffer.concat([r, s, v]), false);
     return signature;
   } else {
     throw new Error(

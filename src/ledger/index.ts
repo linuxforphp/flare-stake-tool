@@ -9,7 +9,7 @@ const ETHEREUM = "Ethereum";
 const FLARE = "Flare";
 
 export async function getPublicKey(bip44Path: string, hrp: string): Promise<string> {
-  let app = await _getApp();
+  const app = await _getApp();
   if (app === FLARE) {
     return await flare.getPublicKey(bip44Path, hrp);
   } else if (app === AVALANCHE) {
@@ -22,7 +22,7 @@ export async function getPublicKey(bip44Path: string, hrp: string): Promise<stri
 }
 
 export async function verifyCAddress(bip44Path: string): Promise<string> {
-  let app = await _getApp();
+  const app = await _getApp();
   if (app === FLARE) {
     return await flare.getCAddress(bip44Path, true);
   } else if (app === AVALANCHE) {
@@ -35,7 +35,7 @@ export async function verifyCAddress(bip44Path: string): Promise<string> {
 }
 
 export async function verifyPAddress(bip44Path: string, hrp: string): Promise<string> {
-  let app = await _getApp();
+  const app = await _getApp();
   if (app === FLARE) {
     return await flare.getPAddress(bip44Path, hrp, true);
   } else if (app === AVALANCHE) {
@@ -48,12 +48,12 @@ export async function verifyPAddress(bip44Path: string, hrp: string): Promise<st
 }
 
 export async function onlyHashSign(): Promise<boolean> {
-  let app = await _getApp();
+  const app = await _getApp();
   return app === AVALANCHE || app === ETHEREUM;
 }
 
 export async function sign(bip44Path: string, tx: string): Promise<string> {
-  let app = await _getApp();
+  const app = await _getApp();
   if (app === FLARE) {
     return await flare.sign(bip44Path, tx);
   } else if (app === AVALANCHE) {
@@ -66,7 +66,7 @@ export async function sign(bip44Path: string, tx: string): Promise<string> {
 }
 
 export async function signEvmTransaction(bip44Path: string, tx: string): Promise<string> {
-  let app = await _getApp();
+  const app = await _getApp();
   if (app === FLARE) {
     return await flare.signEvmTransaction(bip44Path, tx);
   } else if (app === AVALANCHE) {
@@ -79,7 +79,7 @@ export async function signEvmTransaction(bip44Path: string, tx: string): Promise
 }
 
 export async function signHash(bip44Path: string, message: string): Promise<string> {
-  let app = await _getApp();
+  const app = await _getApp();
   if (app === FLARE) {
     return await flare.signHash(bip44Path, message);
   } else if (app === AVALANCHE) {
@@ -92,12 +92,12 @@ export async function signHash(bip44Path: string, message: string): Promise<stri
 }
 
 export async function signPersonalMessage(bip44Path: string, message: string): Promise<string> {
-  let app = await _getApp();
+  const app = await _getApp();
   if (app === FLARE) {
-    let hashedEthMsg = pubk.getHashedEthMsg(message);
+    const hashedEthMsg = pubk.getHashedEthMsg(message);
     return await flare.signHash(bip44Path, hashedEthMsg);
   } else if (app === AVALANCHE) {
-    let hashedEthMsg = pubk.getHashedEthMsg(message);
+    const hashedEthMsg = pubk.getHashedEthMsg(message);
     return await avalanche.signHash(bip44Path, hashedEthMsg);
   } else if (app === ETHEREUM) {
     return await ethereum.signPersonalMessage(bip44Path, message);

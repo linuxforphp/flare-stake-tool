@@ -8,7 +8,7 @@ import { EthAddress, Signature } from "./interfaces";
 export async function isFlareApp() {
   let flare = false;
   await _connect(async (app) => {
-    let info = await app.appInfo();
+    const info = await app.appInfo();
     flare = info.appName === "Flare Network";
   });
   return flare;
@@ -23,7 +23,7 @@ export async function getAddressAndPubKey(
   });
   if (!account) {
     throw Error("Failed to obtain public key from ledger");
-  } else if (account.errorMessage != "No errors") {
+  } else if (account.errorMessage !== "No errors") {
     throw Error(`Failed to obtain public key from ledger: ${account.errorMessage}, code ${account.returnCode}`);
   }
   //let publicKey = pubk.normalizePublicKey(utils.toHex(account!.compressed_pk));
@@ -40,10 +40,10 @@ export async function getPublicKey(bip44Path: string, hrp: string): Promise<stri
   });
   if (!account) {
     throw Error("Failed to obtain public key from ledger");
-  } else if (account.errorMessage != "No errors") {
+  } else if (account.errorMessage !== "No errors") {
     throw Error(`Failed to obtain public key from ledger: ${account.errorMessage}, code ${account.returnCode}`);
   }
-  let publicKey = pubk.normalizePublicKey(utils.toHex(account.compressed_pk));
+  const publicKey = pubk.normalizePublicKey(utils.toHex(account.compressed_pk));
   return publicKey;
 }
 
@@ -69,21 +69,21 @@ export async function getPAddress(bip44Path: string, hrp: string, display: boole
   });
   if (!account) {
     throw Error("Failed to obtain public key from ledger");
-  } else if (account.errorMessage != "No errors") {
+  } else if (account.errorMessage !== "No errors") {
     throw Error(`Failed to obtain public key from ledger: ${account.errorMessage}, code ${account.returnCode}`);
   }
   return account.bech32_address;
 }
 
 export async function sign(bip44Path: string, tx: string): Promise<string> {
-  let txBuffer = utils.toBuffer(tx);
+  const txBuffer = utils.toBuffer(tx);
   let response: ResponseSign | undefined;
   await _connect(async (app) => {
     response = await app.sign(bip44Path, txBuffer);
   });
   if (!response) {
     throw new Error("Failed to sign message on ledger");
-  } else if (response.errorMessage != "No errors") {
+  } else if (response.errorMessage !== "No errors") {
     throw new Error(`Failed to sign message on ledger: ${response.errorMessage}, code ${response.returnCode}`);
   }
   return _getSignatureFromResponse(response);
@@ -91,8 +91,8 @@ export async function sign(bip44Path: string, tx: string): Promise<string> {
 
 export async function signEvmTransaction(bip44Path: string, txHex: string): Promise<string> {
   let response: Signature | undefined;
-  let rawTx = utils.toHex(txHex, false);
-  let resolution = await ledgerService.resolveTransaction(rawTx, {}, {});
+  const rawTx = utils.toHex(txHex, false);
+  const resolution = await ledgerService.resolveTransaction(rawTx, {}, {});
   await _connect(async (app) => {
     response = await app.signEVMTransaction(bip44Path, rawTx, resolution);
   });
@@ -102,28 +102,28 @@ export async function signEvmTransaction(bip44Path: string, txHex: string): Prom
   if (!response.r || !response.s || !response.v) {
     throw new Error("Failed to get signature from ledger device");
   }
-  let r = Buffer.from(utils.toHex(response.r, false), "hex");
-  let s = Buffer.from(utils.toHex(response.s, false), "hex");
+  const r = Buffer.from(utils.toHex(response.r, false), "hex");
+  const s = Buffer.from(utils.toHex(response.s, false), "hex");
   let recoveryParam = parseInt(utils.toHex(response.v, false), 16);
-  if (recoveryParam == 0 || recoveryParam == 1) {
+  if (recoveryParam === 0 || recoveryParam === 1) {
     recoveryParam += 27;
   } else if (recoveryParam > 28) {
-    recoveryParam = recoveryParam % 2 == 1 ? 27 : 28;
+    recoveryParam = recoveryParam % 2 === 1 ? 27 : 28;
   }
 
-  let v = Buffer.from(recoveryParam.toString(16), "hex");
-  let signature = utils.toHex(Buffer.concat([r, s, v]), false);
+  const v = Buffer.from(recoveryParam.toString(16), "hex");
+  const signature = utils.toHex(Buffer.concat([r, s, v]), false);
   return signature;
 }
 
 export async function signHash(bip44Path: string, message: string): Promise<string> {
-  let messageBuffer = utils.toBuffer(message);
+  const messageBuffer = utils.toBuffer(message);
   let response: ResponseSign | undefined;
   await _connect(async (app) => {
     response = await app.signHash(bip44Path, messageBuffer);
   });
   if (!response) {
-    if (response && (response as ResponseSign).errorMessage != "No errors") {
+    if (response && (response as ResponseSign).errorMessage !== "No errors") {
       throw new Error(`Failed to sign message on ledger:  ${(response as ResponseSign).errorMessage}`);
     }
     throw new Error("Failed to sign message on ledger");
@@ -134,7 +134,7 @@ export async function signHash(bip44Path: string, message: string): Promise<stri
 async function _connect(execute: (app: FlareApp) => Promise<void>): Promise<void> {
   let flare;
   try {
-    let transport = await TransportNodeHid.open(undefined);
+    const transport = await TransportNodeHid.open(undefined);
     flare = new FlareApp(transport);
     await execute(flare);
   } finally {
@@ -148,6 +148,6 @@ function _getSignatureFromResponse(response: ResponseSign): string {
   if (!response.r || !response.s || !response.v) {
     throw new Error("Failed to get signature from ledger device");
   }
-  let signature = Buffer.concat([response.r, response.s, response.v]).toString("hex");
+  const signature = Buffer.concat([response.r, response.s, response.v]).toString("hex");
   return signature;
 }

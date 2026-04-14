@@ -46,7 +46,7 @@ export async function moveCP(
 }
 
 export async function exportCP(params: ExportCTxParams, sign: Sign, presubmit?: PreSubmit): Promise<string> {
-  let exportTx = await _exportCP(params, sign, presubmit);
+  const exportTx = await _exportCP(params, sign, presubmit);
   if (exportTx.submitted && !exportTx.confirmed) {
     throw new Error(`Export transaction ${exportTx.id} on C-chain not confirmed (status is ${exportTx.status})`);
   }
@@ -54,7 +54,7 @@ export async function exportCP(params: ExportCTxParams, sign: Sign, presubmit?: 
 }
 
 export async function importCP(params: ImportPTxParams, sign: Sign, presubmit?: PreSubmit): Promise<string> {
-  let importTx = await _importCP(params, sign, presubmit);
+  const importTx = await _importCP(params, sign, presubmit);
   if (importTx.submitted && !importTx.confirmed) {
     throw new Error(`Import transaction ${importTx.id} on P-chain not confirmed (status is ${importTx.status})`);
   }
@@ -62,10 +62,10 @@ export async function importCP(params: ImportPTxParams, sign: Sign, presubmit?: 
 }
 
 async function _exportCP(params: ExportCTxParams, sign: Sign, presubmit?: PreSubmit): Promise<SubmittedTxData> {
-  let account = _getAccount(params.network, params.publicKey);
-  let unsignedTx = await txs.buildExportCTx(account, params);
-  let balance = await chain.getCPBalance(account.network, account.pAddress);
-  let tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
+  const account = _getAccount(params.network, params.publicKey);
+  const unsignedTx = await txs.buildExportCTx(account, params);
+  const balance = await chain.getCPBalance(account.network, account.pAddress);
+  const tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
   if (tx.submitted) {
     await _waitForBalanceChange(balance, () => chain.getCPBalance(account.network, account.pAddress));
   }
@@ -73,10 +73,10 @@ async function _exportCP(params: ExportCTxParams, sign: Sign, presubmit?: PreSub
 }
 
 async function _importCP(params: ImportPTxParams, sign: Sign, presubmit?: PreSubmit): Promise<SubmittedTxData> {
-  let account = _getAccount(params.network, params.publicKey);
-  let unsignedTx = await txs.buildImportPTx(account, params);
-  let balance = await chain.getPBalance(account.network, account.pAddress);
-  let tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
+  const account = _getAccount(params.network, params.publicKey);
+  const unsignedTx = await txs.buildImportPTx(account, params);
+  const balance = await chain.getPBalance(account.network, account.pAddress);
+  const tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
   if (tx.submitted) {
     await _waitForBalanceChange(balance, () => chain.getPBalance(account.network, account.pAddress));
   }
@@ -97,7 +97,7 @@ export async function movePC(
 }
 
 export async function exportPC(params: ExportPTxParams, sign: Sign, presubmit?: PreSubmit): Promise<string> {
-  let exportTx = await _exportPC(params, sign, presubmit);
+  const exportTx = await _exportPC(params, sign, presubmit);
   if (exportTx.submitted && !exportTx.confirmed) {
     throw new Error(`Export transaction ${exportTx.id} on P-chain not confirmed (status is ${exportTx.status})`);
   }
@@ -105,7 +105,7 @@ export async function exportPC(params: ExportPTxParams, sign: Sign, presubmit?: 
 }
 
 export async function importPC(params: ImportCTxParams, sign: Sign, presubmit?: PreSubmit): Promise<string> {
-  let importTx = await _importPC(params, sign, presubmit);
+  const importTx = await _importPC(params, sign, presubmit);
   if (importTx.submitted && !importTx.confirmed) {
     throw new Error(`Import transaction ${importTx.id} on C-chain not confirmed (status is ${importTx.status})`);
   }
@@ -113,10 +113,10 @@ export async function importPC(params: ImportCTxParams, sign: Sign, presubmit?: 
 }
 
 async function _exportPC(params: ExportPTxParams, sign: Sign, presubmit?: PreSubmit): Promise<SubmittedTxData> {
-  let account = _getAccount(params.network, params.publicKey);
-  let unsignedTx = await txs.buildExportPTx(account, params);
-  let balance = await chain.getPCBalance(account.network, account.pAddress);
-  let tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
+  const account = _getAccount(params.network, params.publicKey);
+  const unsignedTx = await txs.buildExportPTx(account, params);
+  const balance = await chain.getPCBalance(account.network, account.pAddress);
+  const tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
   if (tx.submitted) {
     await _waitForBalanceChange(balance, () => chain.getPCBalance(account.network, account.pAddress));
   }
@@ -124,10 +124,10 @@ async function _exportPC(params: ExportPTxParams, sign: Sign, presubmit?: PreSub
 }
 
 async function _importPC(params: ImportCTxParams, sign: Sign, presubmit?: PreSubmit): Promise<SubmittedTxData> {
-  let account = _getAccount(params.network, params.publicKey);
-  let unsignedTx = await txs.buildImportCTx(account, params);
-  let balance = await chain.getCBalance(account.network, account.cAddress);
-  let tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
+  const account = _getAccount(params.network, params.publicKey);
+  const unsignedTx = await txs.buildImportCTx(account, params);
+  const balance = await chain.getCBalance(account.network, account.cAddress);
+  const tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
   if (tx.submitted) {
     await _waitForBalanceChange(balance, () => chain.getCBalance(account.network, account.cAddress));
   }
@@ -150,14 +150,14 @@ export async function addDelegator(
   validate?: boolean,
   presubmit?: PreSubmit
 ): Promise<string> {
-  let account = _getAccount(params.network, params.publicKey);
-  let stakes = await chain.getPStakes(account.network);
+  const account = _getAccount(params.network, params.publicKey);
+  const stakes = await chain.getPStakes(account.network);
   if (validate) {
     await _checkNumberOfStakes(account, params.nodeId, params.startTime, params.endTime, stakes);
     await _checkNodeId(account, params.nodeId, stakes);
   }
-  let unsignedTx = await txs.buildAddDelegatorTx(account, params);
-  let tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
+  const unsignedTx = await txs.buildAddDelegatorTx(account, params);
+  const tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
   if (tx.submitted && !tx.confirmed) {
     throw new Error(`Delegation transaction ${tx.id} on P-chain not confirmed (status is ${tx.status})`);
   }
@@ -175,12 +175,12 @@ export async function addValidator(
   validate?: boolean,
   presubmit?: PreSubmit
 ): Promise<string> {
-  let account = _getAccount(params.network, params.publicKey);
+  const account = _getAccount(params.network, params.publicKey);
   if (validate) {
     await _checkNumberOfStakes(account, params.nodeId, params.startTime, params.endTime);
   }
-  let unsignedTx = await txs.buildAddValidatorTx(account, params);
-  let tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
+  const unsignedTx = await txs.buildAddValidatorTx(account, params);
+  const tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
   if (tx.submitted && !tx.confirmed) {
     throw new Error(`Staking transaction ${tx.id} on P-chain not confirmed (status is ${tx.status})`);
   }
@@ -193,7 +193,7 @@ export async function addValidator(
 export async function internalTransfer(params: TransferPTxParams, sign: Sign, presubmit?: PreSubmit): Promise<string> {
   const account = _getAccount(params.network, params.publicKey);
   const unsignedTx = await txs.buildBaseTx(account, params);
-  let tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
+  const tx = await _signAndSubmitTx(unsignedTx, sign, presubmit);
   if (tx.submitted && !tx.confirmed) {
     throw new Error(`Transfer transaction ${tx.id} on P-chain not confirmed (status is ${tx.status})`);
   }
@@ -207,11 +207,11 @@ export async function _checkNumberOfStakes(
   endTime: BN,
   stakes?: Array<PStake>
 ): Promise<void> {
-  let allStakesOf = await chain.getPStakesOf(account.network, account.pAddress, stakes);
-  let stakesOf = allStakesOf.filter(
+  const allStakesOf = await chain.getPStakesOf(account.network, account.pAddress, stakes);
+  const stakesOf = allStakesOf.filter(
     (s) => new BN(s.endTime.getTime() / 1e3).gte(startTime) && new BN(s.startTime.getTime() / 1e3).lte(endTime)
   );
-  let nodeIds = Array.from(new Set(stakesOf.map((s) => s.nodeId.toLowerCase())));
+  const nodeIds = Array.from(new Set(stakesOf.map((s) => s.nodeId.toLowerCase())));
   if (nodeIds.length >= 3 && !nodeIds.includes(nodeId.toLowerCase())) {
     throw new Error(
       `In the selected time period the account already has active stakes to ${nodeIds.length} different nodes`
@@ -223,7 +223,7 @@ export async function _checkNodeId(account: Account, nodeId: string, stakes?: Ar
   if (!stakes) {
     stakes = await chain.getPStakes(account.network);
   }
-  let nodeIds = stakes.filter((s) => s.type === "validator").map((s) => s.nodeId);
+  const nodeIds = stakes.filter((s) => s.type === "validator").map((s) => s.nodeId);
   if (!nodeIds.includes(nodeId)) {
     throw new Error(`Unknown node id`);
   }
@@ -246,7 +246,7 @@ async function _signAndSubmitTx(
 }
 
 export async function submitTxHex(txHex: string): Promise<string> {
-  let result = await txs.submitTxHex(txHex);
+  const result = await txs.submitTxHex(txHex);
   if (result == null) {
     throw new Error(`Transaction can not be decoded`);
   } else if (!result[2]) {

@@ -14,7 +14,7 @@ export const prompts = {
         message: chalk.magenta("How do you want to connect your wallet?"),
         choices: [...Object.values(walletConstants)],
         filter: (val: string) => {
-          const key = Object.keys(walletConstants).find((key) => walletConstants[key] == val);
+          const key = Object.keys(walletConstants).find((key) => walletConstants[key] === val);
           return key;
         },
       },
@@ -29,7 +29,7 @@ export const prompts = {
         message: chalk.magenta("Choose derivation path..."),
         choices: [...Object.values(derivationModeConstants)],
         filter: (val: string) => {
-          const key = Object.keys(derivationModeConstants).find((key) => derivationModeConstants[key] == val);
+          const key = Object.keys(derivationModeConstants).find((key) => derivationModeConstants[key] === val);
           return key;
         },
       },
@@ -138,7 +138,7 @@ export const prompts = {
         message: chalk.magenta("Do you wish to continue with this?"),
         choices: ["Yes", "No"],
         filter: (val: string) => {
-          return val == "Yes" ? true : false;
+          return val === "Yes" ? true : false;
         },
       },
     ];
@@ -153,7 +153,7 @@ export const prompts = {
         message: chalk.magenta("Which network do you want to connect to?"),
         choices: [...Object.values(networkConstants)],
         filter: (val: string) => {
-          const key = Object.keys(networkConstants).find((key) => networkConstants[key] == val);
+          const key = Object.keys(networkConstants).find((key) => networkConstants[key] === val);
           return key;
         },
       },
@@ -169,7 +169,7 @@ export const prompts = {
         message: chalk.magenta("What do you want to do?"),
         choices: [...Object.values(taskConstants)],
         filter: (val: string) => {
-          const key = Object.keys(taskConstants).find((key) => taskConstants[key] == val);
+          const key = Object.keys(taskConstants).find((key) => taskConstants[key] === val);
           return key;
         },
       },
@@ -265,7 +265,7 @@ export const prompts = {
         message: chalk.magenta("Should claimed rewards be wrapped?"),
         choices: ["Yes", "No"],
         filter: (val: string) => {
-          return val == "Yes" ? true : false;
+          return val === "Yes" ? true : false;
         },
       },
     ];
@@ -304,7 +304,7 @@ export const prompts = {
         ),
         choices: ["Yes", "No"],
         filter: (val: string) => {
-          return val == "Yes" ? true : false;
+          return val === "Yes" ? true : false;
         },
       },
     ];

@@ -77,11 +77,11 @@ export function defaultMovePCParams(): MovePCParams {
 }
 
 export function defaultStakeParams(): StakeParams {
-  let now = new Date();
-  let min = 60 * 1000;
-  let minFromUnixEpoch = Math.round(now.getTime() / min);
-  let start = new Date((minFromUnixEpoch + 5) * min);
-  let end = new Date(start.getTime() + 14 * 24 * 60 * min);
+  const now = new Date();
+  const min = 60 * 1000;
+  const minFromUnixEpoch = Math.round(now.getTime() / min);
+  const start = new Date((minFromUnixEpoch + 5) * min);
+  const end = new Date(start.getTime() + 14 * 24 * 60 * min);
   return {
     nodeId: "",
     amount: "",
@@ -120,12 +120,12 @@ export function defaultERC20Params(): ERC20Params {
 }
 
 export function getExportCTxParams(network: string, publicKey: string, params: MoveCPParams): ExportCTxParams {
-  let amount = utils.flrToGwei(params.amount);
+  const amount = utils.flrToGwei(params.amount);
   return { network, publicKey, type: "EXPORT_CTX", amount, exportFee: new BN(0) };
 }
 
 export function getExportPTxParams(network: string, publicKey: string, params: MovePCParams): ExportPTxParams {
-  let amount = utils.flrToGwei(params.amount);
+  const amount = utils.flrToGwei(params.amount);
   return { network, publicKey, type: "EXPORT_PTX", amount };
 }
 
@@ -138,12 +138,12 @@ export function getImportPTxParams(network: string, publicKey: string): ImportPT
 }
 
 export function getDelegatorPTxParams(network: string, publicKey: string, params: StakeParams): DelegatorPTxParams {
-  let nodeId = params.nodeId.trim();
-  let amount = utils.flrToGwei(params.amount);
-  let startTime = new BN(Math.round(new Date(params.startTime.trim()).getTime() / 1000));
-  let endTime = new BN(Math.round(new Date(params.endTime.trim()).getTime() / 1000));
-  let useConsumableUTXOs = params.useConsumableUTXOs;
-  let customUTXOs = Array.from(params.customUTXOs);
+  const nodeId = params.nodeId.trim();
+  const amount = utils.flrToGwei(params.amount);
+  const startTime = new BN(Math.round(new Date(params.startTime.trim()).getTime() / 1000));
+  const endTime = new BN(Math.round(new Date(params.endTime.trim()).getTime() / 1000));
+  const useConsumableUTXOs = params.useConsumableUTXOs;
+  const customUTXOs = Array.from(params.customUTXOs);
   return {
     network,
     publicKey,
@@ -158,15 +158,15 @@ export function getDelegatorPTxParams(network: string, publicKey: string, params
 }
 
 export function getValidatorPTxParams(network: string, publicKey: string, params: StakeParams): ValidatorPTxParams {
-  let nodeId = params.nodeId.trim();
-  let amount = utils.flrToGwei(params.amount);
-  let startTime = new BN(Math.round(new Date(params.startTime.trim()).getTime() / 1000));
-  let endTime = new BN(Math.round(new Date(params.endTime.trim()).getTime() / 1000));
-  let delegationFee = params.delegationFee ? parseFloat(params.delegationFee) : 0;
-  let popBLSPublicKey = futils.hexToBuffer(params.popBLSPublicKey.trim());
-  let popBLSSignature = futils.hexToBuffer(params.popBLSSignature.trim());
-  let useConsumableUTXOs = params.useConsumableUTXOs;
-  let customUTXOs = Array.from(params.customUTXOs);
+  const nodeId = params.nodeId.trim();
+  const amount = utils.flrToGwei(params.amount);
+  const startTime = new BN(Math.round(new Date(params.startTime.trim()).getTime() / 1000));
+  const endTime = new BN(Math.round(new Date(params.endTime.trim()).getTime() / 1000));
+  const delegationFee = params.delegationFee ? parseFloat(params.delegationFee) : 0;
+  const popBLSPublicKey = futils.hexToBuffer(params.popBLSPublicKey.trim());
+  const popBLSSignature = futils.hexToBuffer(params.popBLSSignature.trim());
+  const useConsumableUTXOs = params.useConsumableUTXOs;
+  const customUTXOs = Array.from(params.customUTXOs);
   return {
     network,
     publicKey,
@@ -189,9 +189,9 @@ export function getClaimCStakeRewardTxParams(
   txType: number,
   params: ClaimRewardParams
 ): ClaimCStakeRewardTxParams {
-  let recipient = params.recipient.trim();
-  let amount = utils.flrToGwei(params.amount);
-  let wrap = params.wrap;
+  const recipient = params.recipient.trim();
+  const amount = utils.flrToGwei(params.amount);
+  const wrap = params.wrap;
   return { network, publicKey, txType, type: "CLAIM_REWARD_CTX", recipient, amount, wrap };
 }
 
@@ -201,7 +201,7 @@ export function getWrapCTxParams(
   txType: number,
   params: WrapCParams
 ): WrapCTxParams {
-  let amount = utils.flrToGwei(params.amount);
+  const amount = utils.flrToGwei(params.amount);
   return { network, publicKey, txType, type: "WRAP_CTX", amount };
 }
 
@@ -211,7 +211,7 @@ export function getUnwrapCTxParams(
   txType: number,
   params: UnwrapCParams
 ): UnwrapCTxParams {
-  let amount = utils.flrToGwei(params.amount);
+  const amount = utils.flrToGwei(params.amount);
   return { network, publicKey, txType, type: "UNWRAP_CTX", amount };
 }
 
@@ -221,9 +221,9 @@ export function getERC20TransferCTxParams(
   txType: number,
   params: ERC20Params
 ): ERC20TransferCTxParams {
-  let token = params.tokenAddress;
-  let recipient = params.recipient;
-  let amount = new BN(params.amount).mul(new BN(10).pow(new BN(18)));
+  const token = params.tokenAddress;
+  const recipient = params.recipient;
+  const amount = new BN(params.amount).mul(new BN(10).pow(new BN(18)));
   return { network, publicKey, txType, type: "ERC20_CTX", token, recipient, amount };
 }
 

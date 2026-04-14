@@ -2,27 +2,27 @@ import Web3 from "web3";
 import { NetworkConfig } from "./constants/network";
 
 export interface Context {
-  privkHex?: string;
-  privkCB58?: string;
-  publicKey?: [Buffer, Buffer];
+  privkHex?: string | undefined;
+  privkCB58?: string | undefined;
+  publicKey?: [Buffer, Buffer] | undefined;
   rpcurl: string;
   web3: Web3;
-  pAddressBech32?: string;
-  cAddressBech32?: string;
-  cAddressHex?: string;
+  pAddressBech32?: string | undefined;
+  cAddressBech32?: string | undefined;
+  cAddressHex?: string | undefined;
   config: NetworkConfig;
   chainID: number;
-  network?: string;
+  network?: string | undefined;
 }
 
 export interface ContextFile {
   wallet: string;
   publicKey: string;
   network: string;
-  flareAddress?: string;
-  ethAddress?: string;
-  vaultId?: string;
-  derivationPath?: string;
+  flareAddress?: string | undefined;
+  ethAddress?: string | undefined;
+  vaultId?: string | undefined;
+  derivationPath?: string | undefined;
 }
 
 // temporary?
@@ -36,23 +36,23 @@ export interface UnsignedTxJson {
   serialization: string;
   signatureRequests: SignatureRequest[];
   unsignedTransactionBuffer: string; // hex
-  usedFee?: string; // C-chain fee (don't know why is not logged inside buffer)
-  txDetails?: string; // JSON of the unsigned transaction
-  forDefiTxId?: string;
-  forDefiHash?: string;
+  usedFee?: string | undefined; // C-chain fee (don't know why is not logged inside buffer)
+  txDetails?: string | undefined; // JSON of the unsigned transaction
+  forDefiTxId?: string | undefined;
+  forDefiHash?: string | undefined;
 }
 
 export interface SignedTxJson extends UnsignedTxJson {
   signature: string;
-  isSentToChain?: boolean;
+  isSentToChain?: boolean | undefined;
 }
 
 export interface UnsignedEvmTxJson {
   transactionType: string;
   rawTx: EvmTxData;
   message: string;
-  forDefiTxId?: string;
-  forDefiHash?: string;
+  forDefiTxId?: string | undefined;
+  forDefiHash?: string | undefined;
 }
 
 export interface SignedEvmTxJson extends UnsignedEvmTxJson {
@@ -60,18 +60,18 @@ export interface SignedEvmTxJson extends UnsignedEvmTxJson {
 }
 
 export interface FlareTxParams {
-  amount?: string;
-  fee?: string;
-  nodeId?: string;
-  startTime?: string;
-  endTime?: string;
-  nonce?: string;
-  delegationFee?: string;
-  threshold?: string;
-  popBlsPublicKey?: string;
-  popBlsSignature?: string;
-  transferAddress?: string;
-  feeMultiplier?: string;
+  amount?: string | undefined;
+  fee?: string | undefined;
+  nodeId?: string | undefined;
+  startTime?: string | undefined;
+  endTime?: string | undefined;
+  nonce?: string | undefined;
+  delegationFee?: string | undefined;
+  threshold?: string | undefined;
+  popBlsPublicKey?: string | undefined;
+  popBlsSignature?: string | undefined;
+  transferAddress?: string | undefined;
+  feeMultiplier?: string | undefined;
 }
 
 interface EvmTxData {
@@ -79,9 +79,9 @@ interface EvmTxData {
   gasPrice: number;
   gasLimit: number;
   to: string;
-  value?: string | bigint;
+  value?: string | bigint | undefined;
   chainId: number;
-  data?: string;
+  data?: string | undefined;
 }
 
 /**
@@ -98,8 +98,8 @@ export interface ScreenConstantsInterface {
  */
 export interface ConnectWalletInterface {
   wallet: string;
-  path?: string;
-  network?: string;
+  path?: string | undefined;
+  network?: string | undefined;
 }
 
 /**

@@ -35,7 +35,7 @@ function getArgv() {
   }
 }
 
-if (command == "interactive" || command == "-i") {
+if (command === "interactive" || command === "-i") {
   cliInfo(true);
   interactiveCli(baseArgv)
     .then(() => {
