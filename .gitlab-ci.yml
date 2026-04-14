@@ -40,9 +40,29 @@ variables:
     - if [ $result -eq 1 ]; then npm publish; else npm publish --tag beta; fi;
 
 stages:
+  - check
+  - build
   - sbom
   - publish
 
+lint:
+  stage: check
+  image: node:24
+  before_script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm lint:check
+    - pnpm format:check
+
+build:
+  stage: build
+  image: node:24
+  before_script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm build
 
 check-tag:
   stage: publish
