@@ -52,8 +52,8 @@ pnpm build
 
 ## Linting and formatting
 
-This project uses [ESLint](https://eslint.org/) and
-[Prettier](https://prettier.io/).
+This project uses [ESLint](https://eslint.org/) and [Prettier](https://prettier.io/)
+with the [Flare shared configurations](https://github.com/flare-foundation/flare-handbook).
 
 Lint all source files:
 
