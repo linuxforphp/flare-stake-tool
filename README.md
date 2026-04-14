@@ -29,7 +29,7 @@ This tool also supports moving assets between the C- and P-chains and back.
 
 ## Installation
 
-There are two ways to install the tool. Unless you plan to contribute to this repository, We recommend using `yarn` and `node` with version >= 20.18.0.
+There are two ways to install the tool. Unless you plan to contribute to this repository, We recommend using `yarn` and `node` with version >= 24.0.0.
 
 ### Using npm
 

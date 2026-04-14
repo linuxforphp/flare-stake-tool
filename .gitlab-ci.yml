@@ -20,7 +20,7 @@ variables:
 
 # https://docs.npmjs.com/trusted-publishers#gitlab-cicd-configuration
 .publish-npm_template:
-  image: node:22
+  image: node:24
   id_tokens:
     NPM_ID_TOKEN:
       aud: "npm:registry.npmjs.org"
