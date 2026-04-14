@@ -2,13 +2,7 @@ import { readFileSync, writeFileSync, mkdirSync } from "fs";
 import crypto from "crypto";
 import { unPrefix0x, readUnsignedTxJson } from "../utils";
 import { readUnsignedEvmTx } from "./utils";
-import {
-  SignedTxJson,
-  SignedEvmTxJson,
-  UnsignedTxJson,
-  UnsignedEvmTxJson,
-  ContextFile,
-} from "../interfaces";
+import { SignedTxJson, SignedEvmTxJson, UnsignedTxJson, UnsignedEvmTxJson, ContextFile } from "../interfaces";
 import {
   gatewayHost,
   forDefiDirectory,
@@ -40,7 +34,7 @@ interface VaultResponse {
 export async function sendToForDefi(
   unsignedTxidFile: string,
   ctxFile: string,
-  evmTx: boolean = false,
+  evmTx: boolean = false
 ): Promise<string> {
   const accessToken = readFileSync("./token", "utf8");
   const file = readFileSync(ctxFile, "utf8");
@@ -101,7 +95,7 @@ export async function sendToForDefi(
     },
     body: requestBody,
   });
-  const responseJson = await response.json() as ForDefiResponse;
+  const responseJson = (await response.json()) as ForDefiResponse;
   let txId = responseJson.id;
 
   // write tx id (to later fetch the signature)
@@ -109,7 +103,7 @@ export async function sendToForDefi(
   writeFileSync(
     `${forDefiDirectory}/${forDefiUnsignedTxnDirectory}/${unsignedTxidFile}.unsignedTx.json`,
     JSON.stringify(txidObj),
-    "utf8",
+    "utf8"
   );
   return txId;
 }
@@ -120,10 +114,7 @@ export async function sendToForDefi(
  * @param evmTx - true if it is a regular EVM transaction
  * @returns signature
  */
-export async function getSignature(
-  unsignedTxidFile: string,
-  evmTx: boolean = false,
-): Promise<string> {
+export async function getSignature(unsignedTxidFile: string, evmTx: boolean = false): Promise<string> {
   const path = "/api/v1/transactions";
   const accessToken = readFileSync("./token", "utf8");
 
@@ -147,14 +138,11 @@ export async function getSignature(
     },
   });
 
-  const responseJson = await responseSignature.json() as ForDefiResponse;
+  const responseJson = (await responseSignature.json()) as ForDefiResponse;
 
   let signatureHex;
   try {
-    signatureHex = Buffer.from(
-      responseJson.signatures[0].data,
-      "base64",
-    ).toString("hex");
+    signatureHex = Buffer.from(responseJson.signatures[0].data, "base64").toString("hex");
   } catch (e: any) {
     throw Error("Transaction is not signed yet? " + e);
   }
@@ -167,7 +155,7 @@ export async function getSignature(
   writeFileSync(
     `${forDefiDirectory}/${forDefiSignedTxnDirectory}/${unsignedTxidFile}.signedTx.json`,
     JSON.stringify(signedTxObj),
-    "utf8",
+    "utf8"
   );
 
   return signatureHex;
@@ -188,12 +176,12 @@ export async function getVaultPublickey(vaultId: string): Promise<string> {
       Authorization: `Bearer ${accessToken}`,
     },
   });
-  const responseJson = await response.json() as VaultResponse;
+  const responseJson = (await response.json()) as VaultResponse;
 
   let pubKey = responseJson.public_key_compressed;
   // vault invalid or wrong environment (token) is used
   if (!pubKey) {
-    throw new Error('public_key_compressed not found in vault response');
+    throw new Error("public_key_compressed not found in vault response");
   }
   let pubKeyHex = Buffer.from(pubKey, "base64").toString("hex");
 
@@ -220,11 +208,11 @@ async function createVault(vaultName: string, tokenPath: string): Promise<string
     },
     body: requestBody,
   });
-  const responseJson = await response.json() as VaultResponse;
+  const responseJson = (await response.json()) as VaultResponse;
   console.log(responseJson);
   let pubKey = responseJson.public_key_compressed;
   if (!pubKey) {
-    throw new Error('public_key_compressed not found in vault response');
+    throw new Error("public_key_compressed not found in vault response");
   }
   let pubKeyHex = Buffer.from(pubKey, "base64").toString("hex");
   console.log(pubKeyHex);

@@ -6,27 +6,22 @@ import {
   pChainStakeMirror,
   flareContractRegistryABI,
 } from "./constants/contracts";
-import {
-  rpcUrlFromNetworkConfig,
-} from "./context";
+import { rpcUrlFromNetworkConfig } from "./context";
 import { Context } from "./interfaces";
 import { pvm } from "@flarenetwork/flarejs";
-import * as settings from './settings'
+import * as settings from "./settings";
 import { integerToDecimal } from "./utils";
 import { zeroAddress } from "ethereumjs-util";
 import { GetCurrentValidatorsResponse } from "@flarenetwork/flarejs/dist/vms/pvm";
 
 type DelegationInfo = {
   nodeID: string;
-  stakeAmount: number,
-  startTime: Date,
-  endTime: Date
-}
+  stakeAmount: number;
+  startTime: Date;
+  endTime: Date;
+};
 
-async function getContractAddress(
-  network: string,
-  contractName: string,
-): Promise<string> {
+async function getContractAddress(network: string, contractName: string): Promise<string> {
   const rpcUrl = rpcUrlFromNetworkConfig(network);
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
@@ -36,7 +31,7 @@ async function getContractAddress(
   const contract = new ethers.Contract(
     defaultContractAddresses.FlareContractRegistry[network],
     flareContractRegistryABI,
-    provider,
+    provider
   );
 
   const result = await (contract.getContractAddressByName as (name: string) => Promise<string>)(contractName);
@@ -48,21 +43,17 @@ async function getContractAddress(
   throw new Error("Contract Address not found");
 }
 
-
 ////////// MIRROR FUND /////////
 // fetches current validator info
 const fetchValidatorInfo = async (ctx: Context) => {
-  const pvmapi = new pvm.PVMApi(settings.URL[ctx.config.hrp])
-  const validator = await pvmapi.getCurrentValidators()
+  const pvmapi = new pvm.PVMApi(settings.URL[ctx.config.hrp]);
+  const validator = await pvmapi.getCurrentValidators();
   return validator;
 };
 
 // fetches the delegation stake (from both current validator) for the current user
-const fetchDelegateStake = async (
-  ctx: Context,
-  validatorFunction: (ctx: Context) => any,
-) => {
-  const validatorsInfo = await validatorFunction(ctx) as GetCurrentValidatorsResponseFixed;
+const fetchDelegateStake = async (ctx: Context, validatorFunction: (ctx: Context) => any) => {
+  const validatorsInfo = (await validatorFunction(ctx)) as GetCurrentValidatorsResponseFixed;
   const validatorsData = validatorsInfo.validators;
   let userStake = [];
   if (!ctx.pAddressBech32) {
@@ -71,18 +62,16 @@ const fetchDelegateStake = async (
   for (let i = 0; i < validatorsData.length; i++) {
     const validatorData = validatorsData[i];
     // get validators
-    if (validatorData.validationRewardOwner && validatorData.validationRewardOwner.addresses.includes(ctx.pAddressBech32)) {
-      const startDate = new Date(
-        parseInt(validatorData.startTime) * 1000,
-      );
-      const endDate = new Date(
-        parseInt(validatorData.endTime) * 1000,
-      );
+    if (
+      validatorData.validationRewardOwner &&
+      validatorData.validationRewardOwner.addresses.includes(ctx.pAddressBech32)
+    ) {
+      const startDate = new Date(parseInt(validatorData.startTime) * 1000);
+      const endDate = new Date(parseInt(validatorData.endTime) * 1000);
       userStake.push({
         type: "validator",
         nodeID: validatorData.nodeID,
-        stakeAmount:
-          parseFloat(validatorData.stakeAmount) / 1e9,
+        stakeAmount: parseFloat(validatorData.stakeAmount) / 1e9,
         startTime: startDate,
         endTime: endDate,
       });
@@ -90,20 +79,16 @@ const fetchDelegateStake = async (
 
     // get delegators
     for (let j = 0; j < (validatorData.delegators && validatorData.delegators?.length); j++) {
-      if (validatorData.delegators[j] &&
+      if (
+        validatorData.delegators[j] &&
         validatorData.delegators[j].rewardOwner.addresses.includes(ctx.pAddressBech32)
       ) {
-        const startDate = new Date(
-          parseInt(validatorData.delegators[j].startTime) * 1000,
-        );
-        const endDate = new Date(
-          parseInt(validatorData.delegators[j].endTime) * 1000,
-        );
+        const startDate = new Date(parseInt(validatorData.delegators[j].startTime) * 1000);
+        const endDate = new Date(parseInt(validatorData.delegators[j].endTime) * 1000);
         userStake.push({
           type: "delegator",
           nodeID: validatorData.nodeID,
-          stakeAmount:
-            parseFloat(validatorData.delegators[j].stakeAmount) / 1e9,
+          stakeAmount: parseFloat(validatorData.delegators[j].stakeAmount) / 1e9,
           startTime: startDate,
           endTime: endDate,
         });
@@ -123,10 +108,10 @@ const getTotalFromDelegation = (data: DelegationInfo[]) => {
 };
 
 /**
-* @description returns the mirror fund details
-* @param ctx - context
-* @returns - total mirror funds and funds with start and end time
-*/
+ * @description returns the mirror fund details
+ * @param ctx - context
+ * @returns - total mirror funds and funds with start and end time
+ */
 export async function fetchMirrorFunds(ctx: Context) {
   // fetch from the contract
   // TODO: implement from contract (mirrored) and split to two (mirrored and directly from p-chai
@@ -147,19 +132,15 @@ export async function fetchMirrorFunds(ctx: Context) {
   //   integerToDecimal(stakedAmount.toString(), 18),
   // );
   // fetch from the chain
-  const delegationToCurrentValidator = await fetchDelegateStake(
-    ctx,
-    fetchValidatorInfo,
-  );
+  const delegationToCurrentValidator = await fetchDelegateStake(ctx, fetchValidatorInfo);
   const totalDelegatedAmount = getTotalFromDelegation(delegationToCurrentValidator);
 
   const totalInFLR = parseFloat(totalDelegatedAmount.toString());
   return {
     "Total Mirrored Amount": `${totalInFLR} FLR`,
-    "Mirror Funds Details": delegationToCurrentValidator
+    "Mirror Funds Details": delegationToCurrentValidator,
   };
 }
-
 
 export type GetCurrentValidatorsResponseFixed = {
   validators: {
@@ -205,4 +186,4 @@ export type GetCurrentValidatorsResponseFixed = {
       potentialReward: string;
     }[];
   }[];
-}
+};

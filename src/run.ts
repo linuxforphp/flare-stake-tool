@@ -28,12 +28,7 @@ function getArgv() {
     command === "transfer"
   ) {
     return [...baseArgv.slice(0, 2), "transaction", ...baseArgv.slice(2)];
-  } else if (
-    command === "addresses" ||
-    command === "network" ||
-    command === "balance" ||
-    command === "validators"
-  ) {
+  } else if (command === "addresses" || command === "network" || command === "balance" || command === "validators") {
     return [...baseArgv.slice(0, 2), "info", ...baseArgv.slice(2)];
   } else {
     return baseArgv;
@@ -53,14 +48,12 @@ if (command == "interactive" || command == "-i") {
   cliInfo();
   const program = new Command("Flare Stake Tool");
   cli(program);
-  program.parseAsync(getArgv())
-    .catch((err) => {
-      if (err instanceof Error) {
-        console.error(chalk.red(`Error: ${err.message}`));
-      } else {
-        console.error(chalk.red(`Error: ${String(err)}`));
-      }
-      process.exit(1);
-    });
-
+  program.parseAsync(getArgv()).catch((err) => {
+    if (err instanceof Error) {
+      console.error(chalk.red(`Error: ${err.message}`));
+    } else {
+      console.error(chalk.red(`Error: ${String(err)}`));
+    }
+    process.exit(1);
+  });
 }

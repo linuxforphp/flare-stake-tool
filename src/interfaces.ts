@@ -1,87 +1,87 @@
-import Web3 from 'web3'
-import { NetworkConfig } from './constants/network'
+import Web3 from "web3";
+import { NetworkConfig } from "./constants/network";
 
 export interface Context {
-  privkHex?: string
-  privkCB58?: string
-  publicKey?: [Buffer, Buffer]
-  rpcurl: string
-  web3: Web3
-  pAddressBech32?: string
-  cAddressBech32?: string
-  cAddressHex?: string
-  config: NetworkConfig
-  chainID: number,
-  network?: string
+  privkHex?: string;
+  privkCB58?: string;
+  publicKey?: [Buffer, Buffer];
+  rpcurl: string;
+  web3: Web3;
+  pAddressBech32?: string;
+  cAddressBech32?: string;
+  cAddressHex?: string;
+  config: NetworkConfig;
+  chainID: number;
+  network?: string;
 }
 
 export interface ContextFile {
-  wallet: string
-  publicKey: string
-  network: string
-  flareAddress?: string
-  ethAddress?: string
-  vaultId?: string
-  derivationPath?: string
+  wallet: string;
+  publicKey: string;
+  network: string;
+  flareAddress?: string;
+  ethAddress?: string;
+  vaultId?: string;
+  derivationPath?: string;
 }
 
 // temporary?
 export interface SignatureRequest {
-  message: string
-  signer: string
+  message: string;
+  signer: string;
 }
 
 export interface UnsignedTxJson {
-  transactionType: string
-  serialization: string
-  signatureRequests: SignatureRequest[]
-  unsignedTransactionBuffer: string // hex
-  usedFee?: string // C-chain fee (don't know why is not logged inside buffer)
-  txDetails?: string // JSON of the unsigned transaction
-  forDefiTxId?: string
-  forDefiHash?: string
+  transactionType: string;
+  serialization: string;
+  signatureRequests: SignatureRequest[];
+  unsignedTransactionBuffer: string; // hex
+  usedFee?: string; // C-chain fee (don't know why is not logged inside buffer)
+  txDetails?: string; // JSON of the unsigned transaction
+  forDefiTxId?: string;
+  forDefiHash?: string;
 }
 
 export interface SignedTxJson extends UnsignedTxJson {
-  signature: string
-  isSentToChain?: boolean
+  signature: string;
+  isSentToChain?: boolean;
 }
 
 export interface UnsignedEvmTxJson {
-  transactionType: string
-  rawTx: EvmTxData
-  message: string
-  forDefiTxId?: string
-  forDefiHash?: string
+  transactionType: string;
+  rawTx: EvmTxData;
+  message: string;
+  forDefiTxId?: string;
+  forDefiHash?: string;
 }
 
 export interface SignedEvmTxJson extends UnsignedEvmTxJson {
-  signature: string
+  signature: string;
 }
 
 export interface FlareTxParams {
-  amount?: string
-  fee?: string
-  nodeId?: string
-  startTime?: string
-  endTime?: string
-  nonce?: string
-  delegationFee?: string
-  threshold?: string
-  popBlsPublicKey?: string
-  popBlsSignature?: string
-  transferAddress?: string,
-  feeMultiplier?: string
+  amount?: string;
+  fee?: string;
+  nodeId?: string;
+  startTime?: string;
+  endTime?: string;
+  nonce?: string;
+  delegationFee?: string;
+  threshold?: string;
+  popBlsPublicKey?: string;
+  popBlsSignature?: string;
+  transferAddress?: string;
+  feeMultiplier?: string;
 }
 
 interface EvmTxData {
-  nonce: number
-  gasPrice: number
-  gasLimit: number
-  to: string
-  value?: string | bigint
-  chainId: number
-  data?: string
+  nonce: number;
+  gasPrice: number;
+  gasLimit: number;
+  to: string;
+  value?: string | bigint;
+  chainId: number;
+  data?: string;
 }
 
 /**
@@ -89,7 +89,7 @@ interface EvmTxData {
  * @interface ScreenConstantsInterface
  */
 export interface ScreenConstantsInterface {
-  [key: string]: string
+  [key: string]: string;
 }
 
 /**
@@ -97,9 +97,9 @@ export interface ScreenConstantsInterface {
  * @interface ConnectWalletInterface
  */
 export interface ConnectWalletInterface {
-  wallet: string
-  path?: string
-  network?: string
+  wallet: string;
+  path?: string;
+  network?: string;
 }
 
 /**
@@ -107,10 +107,10 @@ export interface ConnectWalletInterface {
  * @interface DerivedAddress
  */
 export interface DerivedAddress {
-  ethAddress: string
-  publicKey: string
-  balance?: string
-  derivationPath: string
+  ethAddress: string;
+  publicKey: string;
+  balance?: string;
+  derivationPath: string;
 }
 
 /**
@@ -118,13 +118,13 @@ export interface DerivedAddress {
  * @interface DelegationDetailsInterface
  */
 export interface DelegationDetailsInterface {
-  amount: string
-  nodeId: string
-  startTime: string
-  endTime: string
-  delegationFee?: string
-  popBLSPublicKey?: string
-  popBLSSignature?: string
+  amount: string;
+  nodeId: string;
+  startTime: string;
+  endTime: string;
+  delegationFee?: string;
+  popBLSPublicKey?: string;
+  popBLSSignature?: string;
 }
 
 /**
@@ -133,15 +133,14 @@ export interface DelegationDetailsInterface {
  */
 export interface ContractAddressesInterface {
   [contractName: string]: {
-    flare: string
-    costwo: string
-    songbird: string
-    coston: string
-  }
+    flare: string;
+    costwo: string;
+    songbird: string;
+    coston: string;
+  };
 }
 
-
 export interface TransferDetailsInterface {
-  amount: string
-  transferAddress: string
+  amount: string;
+  transferAddress: string;
 }

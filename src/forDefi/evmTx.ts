@@ -1,10 +1,16 @@
 import { Transaction, TransactionLike, ZeroAddress, Wallet, ethers } from "ethers";
-import { prefix0x, toHex, unPrefix0x } from "../utils"
-import { saveUnsignedEvmTx, readSignedEvmTx, readUnsignedEvmTx, getWeb3Contract, waitFinalize } from './utils'
-import { Context, UnsignedEvmTxJson } from '../interfaces';
-import { claimSetupManagerABI, distributionToDelegatorsABI, flareContractRegistryABI, flareContractRegistryAddress, validatorRewardManagerABI } from "../constants/contracts";
+import { prefix0x, toHex, unPrefix0x } from "../utils";
+import { saveUnsignedEvmTx, readSignedEvmTx, readUnsignedEvmTx, getWeb3Contract, waitFinalize } from "./utils";
+import { Context, UnsignedEvmTxJson } from "../interfaces";
+import {
+  claimSetupManagerABI,
+  distributionToDelegatorsABI,
+  flareContractRegistryABI,
+  flareContractRegistryAddress,
+  validatorRewardManagerABI,
+} from "../constants/contracts";
 import { logInfo } from "../output";
-import * as ledger from '../ledger'
+import * as ledger from "../ledger";
 import Web3 from "web3";
 import { networkTokenSymbol } from "../cli";
 import chalk from "chalk";
@@ -18,14 +24,20 @@ import chalk from "chalk";
  * @param nonce - nonce
  * @returns returns the ForDefi hash of the transaction
  */
-export async function createWithdrawalTransaction(ctx: Context, toAddress: string, amount: number, fileId: string, nonce: number): Promise<string> {
+export async function createWithdrawalTransaction(
+  ctx: Context,
+  toAddress: string,
+  amount: number,
+  fileId: string,
+  nonce: number
+): Promise<string> {
   const web3 = ctx.web3;
   if (!ctx.cAddressHex) {
     throw new Error("cAddressHex not found in context");
   }
   const txNonce = nonce ?? Number(await web3.eth.getTransactionCount(ctx.cAddressHex));
 
-  const amountWei = BigInt(amount) * BigInt(10 ** 9) // amount is already in nanoFLR
+  const amountWei = BigInt(amount) * BigInt(10 ** 9); // amount is already in nanoFLR
 
   // check if address is valid
   web3.utils.toChecksumAddress(toAddress);
@@ -36,20 +48,20 @@ export async function createWithdrawalTransaction(ctx: Context, toAddress: strin
     gasLimit: 4_000_000,
     to: toAddress,
     value: amountWei.toString(),
-    chainId: ctx.config.chainID
-  }
+    chainId: ctx.config.chainID,
+  };
 
   // serialized unsigned transaction
-  const ethersTx = Transaction.from(rawTx)
+  const ethersTx = Transaction.from(rawTx);
   const hash = unPrefix0x(ethersTx.unsignedHash);
-  const forDefiHash = Buffer.from(hash, 'hex').toString('base64');
+  const forDefiHash = Buffer.from(hash, "hex").toString("base64");
 
   const unsignedTx = <UnsignedEvmTxJson>{
-    transactionType: 'EVM',
+    transactionType: "EVM",
     rawTx: rawTx,
     message: hash,
-    forDefiHash: forDefiHash
-  }
+    forDefiHash: forDefiHash,
+  };
   // save tx data
   saveUnsignedEvmTx(unsignedTx, fileId);
 
@@ -64,19 +76,28 @@ export async function createWithdrawalTransaction(ctx: Context, toAddress: strin
  * @returns returns the ForDefi hash of the transaction
  */
 export async function createOptOutTransaction(ctx: Context, fileId: string, nonce: number): Promise<string> {
-
   const web3 = ctx.web3;
   if (!ctx.cAddressHex) {
     throw new Error("cAddressHex not found in context");
   }
 
-  const flareContractRegistryWeb3Contract = getWeb3Contract(web3, flareContractRegistryAddress, flareContractRegistryABI);
-  const distributionToDelegatorsAddress: string = await flareContractRegistryWeb3Contract.methods.getContractAddressByName("DistributionToDelegators").call();
+  const flareContractRegistryWeb3Contract = getWeb3Contract(
+    web3,
+    flareContractRegistryAddress,
+    flareContractRegistryABI
+  );
+  const distributionToDelegatorsAddress: string = await flareContractRegistryWeb3Contract.methods
+    .getContractAddressByName("DistributionToDelegators")
+    .call();
   if (distributionToDelegatorsAddress == ZeroAddress) {
     throw new Error("Distribution contract address not found");
   }
   const txNonce = nonce ?? String(await ctx.web3.eth.getTransactionCount(ctx.cAddressHex));
-  const distributionWeb3Contract = getWeb3Contract(ctx.web3, distributionToDelegatorsAddress, distributionToDelegatorsABI);
+  const distributionWeb3Contract = getWeb3Contract(
+    ctx.web3,
+    distributionToDelegatorsAddress,
+    distributionToDelegatorsABI
+  );
   const fnToEncode = distributionWeb3Contract.methods.optOutOfAirdrop();
 
   // check if address is already opt out candidate
@@ -91,20 +112,20 @@ export async function createOptOutTransaction(ctx: Context, fileId: string, nonc
     gasLimit: 4_000_000,
     to: distributionWeb3Contract.options.address,
     data: fnToEncode.encodeABI(),
-    chainId: ctx.config.networkID
-  }
+    chainId: ctx.config.networkID,
+  };
 
   // serialized unsigned transaction
-  const ethersTx = Transaction.from(rawTx)
+  const ethersTx = Transaction.from(rawTx);
   const hash = unPrefix0x(ethersTx.unsignedHash);
-  const forDefiHash = Buffer.from(hash, 'hex').toString('base64');
+  const forDefiHash = Buffer.from(hash, "hex").toString("base64");
 
   const unsignedTx = <UnsignedEvmTxJson>{
-    transactionType: 'EVM',
+    transactionType: "EVM",
     rawTx: rawTx,
     message: hash,
-    forDefiHash: forDefiHash
-  }
+    forDefiHash: forDefiHash,
+  };
   // save tx data
   saveUnsignedEvmTx(unsignedTx, fileId);
 
@@ -121,8 +142,14 @@ export async function createOptOutTransaction(ctx: Context, fileId: string, nonc
  * @param wrap - whether to wrap the claimed amount
  * @returns returns the unsigned transaction object
  */
-export async function createClaimTransaction(ctx: Context, amount: number, recipientAddress: string, wrap: boolean, nonce?: number): Promise<TransactionLike> {
-  logInfo('Creating claim transaction...')
+export async function createClaimTransaction(
+  ctx: Context,
+  amount: number,
+  recipientAddress: string,
+  wrap: boolean,
+  nonce?: number
+): Promise<TransactionLike> {
+  logInfo("Creating claim transaction...");
 
   const web3 = ctx.web3;
   const owner = ctx.cAddressHex;
@@ -133,13 +160,23 @@ export async function createClaimTransaction(ctx: Context, amount: number, recip
   // check if address is valid
   web3.utils.toChecksumAddress(recipientAddress);
 
-  const flareContractRegistryWeb3Contract = getWeb3Contract(web3, flareContractRegistryAddress, flareContractRegistryABI);
-  const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods.getContractAddressByName("ValidatorRewardManager").call();
+  const flareContractRegistryWeb3Contract = getWeb3Contract(
+    web3,
+    flareContractRegistryAddress,
+    flareContractRegistryABI
+  );
+  const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods
+    .getContractAddressByName("ValidatorRewardManager")
+    .call();
   if (validatorRewardManagerAddress == ZeroAddress) {
     throw new Error("ValidatorRewardManager contract address not found");
   }
   const txNonce = nonce ?? Number(await web3.eth.getTransactionCount(owner));
-  const validatorRewardManagerContract = getWeb3Contract(web3, validatorRewardManagerAddress, validatorRewardManagerABI);
+  const validatorRewardManagerContract = getWeb3Contract(
+    web3,
+    validatorRewardManagerAddress,
+    validatorRewardManagerABI
+  );
 
   // check if unclaimed rewards are available
   const rewardsState = await validatorRewardManagerContract.methods.getStateOfRewards(owner).call();
@@ -149,20 +186,17 @@ export async function createClaimTransaction(ctx: Context, amount: number, recip
   const totalRewards = BigInt(rewardsState[0]);
   const claimedRewards = BigInt(rewardsState[1]);
   const unclaimedRewardsWei: bigint = totalRewards - claimedRewards;
-  const amountWei = amount ? BigInt(amount) * BigInt(10 ** 9) : unclaimedRewardsWei // amount is already in nanoFLR
+  const amountWei = amount ? BigInt(amount) * BigInt(10 ** 9) : unclaimedRewardsWei; // amount is already in nanoFLR
   const unclaimedRewards = ethers.formatUnits(unclaimedRewardsWei, 18); // convert to FLR
 
   if (amountWei > unclaimedRewardsWei || unclaimedRewardsWei === 0n || amountWei === 0n) {
-    const symbol = networkTokenSymbol[ctx.config.hrp]
-    throw new Error(`Trying to claim: ${ethers.formatUnits(amount, 9)} ${symbol}. Unclaimed rewards: ${unclaimedRewards} ${symbol}. Amount should be greater than 0 and less than or equal to unclaimed rewards.`);
+    const symbol = networkTokenSymbol[ctx.config.hrp];
+    throw new Error(
+      `Trying to claim: ${ethers.formatUnits(amount, 9)} ${symbol}. Unclaimed rewards: ${unclaimedRewards} ${symbol}. Amount should be greater than 0 and less than or equal to unclaimed rewards.`
+    );
   }
 
-  const fnToEncode = validatorRewardManagerContract.methods.claim(
-    owner,
-    recipientAddress,
-    amountWei,
-    wrap
-  );
+  const fnToEncode = validatorRewardManagerContract.methods.claim(owner, recipientAddress, amountWei, wrap);
   // const lastBlock = await web3.eth.getBlockNumber() - 3n;
   // let gasPrice: bigint;
   // try {
@@ -186,8 +220,8 @@ export async function createClaimTransaction(ctx: Context, amount: number, recip
     gasLimit: 4_000_000,
     to: validatorRewardManagerContract.options.address,
     data: fnToEncode.encodeABI(),
-    chainId: ctx.config.networkID
-  }
+    chainId: ctx.config.networkID,
+  };
 
   return rawTx;
 }
@@ -199,18 +233,17 @@ export async function createClaimTransaction(ctx: Context, amount: number, recip
  * @returns returns the ForDefi hash of the transaction
  */
 export function saveUnsignedClaimTx(rawTx: TransactionLike, fileId: string): string {
-
   // serialized unsigned transaction
-  const ethersTx = Transaction.from(rawTx)
+  const ethersTx = Transaction.from(rawTx);
   const hash = unPrefix0x(ethersTx.unsignedHash);
-  const forDefiHash = Buffer.from(hash, 'hex').toString('base64');
+  const forDefiHash = Buffer.from(hash, "hex").toString("base64");
 
   const unsignedTx = <UnsignedEvmTxJson>{
-    transactionType: 'EVM',
+    transactionType: "EVM",
     rawTx: rawTx,
     message: hash,
-    forDefiHash: forDefiHash
-  }
+    forDefiHash: forDefiHash,
+  };
   // save tx data
   saveUnsignedEvmTx(unsignedTx, fileId);
 
@@ -244,31 +277,29 @@ export async function sendSignedEvmTransaction(ctx: Context, fileId: string): Pr
   const serializedSigned = ethersTx.serialized;
 
   // send signed tx to the network
-  const receipt = await waitFinalize3(ctx.cAddressHex, () => ctx.web3.eth.sendSignedTransaction(serializedSigned)).catch((error: unknown) => {
+  const receipt = await waitFinalize3(ctx.cAddressHex, () =>
+    ctx.web3.eth.sendSignedTransaction(serializedSigned)
+  ).catch((error: unknown) => {
     if (
       error &&
-      typeof error === 'object' &&
+      typeof error === "object" &&
       "innerError" in error &&
       error.innerError &&
-      typeof error.innerError === 'object' &&
+      typeof error.innerError === "object" &&
       "message" in error.innerError
     ) {
-      console.log(chalk.red(error.innerError.message))
-    } else if (
-      error &&
-      typeof error === 'object' &&
-      'reason' in error
-    ) {
-      console.log(chalk.red(error.reason))
+      console.log(chalk.red(error.innerError.message));
+    } else if (error && typeof error === "object" && "reason" in error) {
+      console.log(chalk.red(error.reason));
     } else {
-      console.log(chalk.red(error))
+      console.log(chalk.red(error));
       console.dir(error);
     }
     process.exit(1);
   });
   // Validate receipt
   if (!receipt.transactionHash) {
-    throw new Error('Transaction receipt missing transactionHash');
+    throw new Error("Transaction receipt missing transactionHash");
   }
   return toHex(receipt.transactionHash);
 }
@@ -277,9 +308,9 @@ export async function signEvmTransaction(
   type: "ledger" | "privateKey",
   ctx: Context,
   unsignedTx: TransactionLike,
-  derivationPath?: string,
+  derivationPath?: string
 ) {
-  logInfo('Signing transaction...')
+  logInfo("Signing transaction...");
   if (!ctx.web3) throw new Error("Web3 instance missing in context");
   if (!ctx.cAddressHex) throw new Error("cAddressHex missing in context");
   const web3 = ctx.web3;
@@ -293,7 +324,7 @@ export async function signEvmTransaction(
   if (type === "ledger") {
     if (!derivationPath) throw new Error("Derivation path required for Ledger signing");
     const serializedUnsignedTx = ethersTx.unsignedSerialized;
-    const signature = await ledger.signEvmTransaction(derivationPath, serializedUnsignedTx)
+    const signature = await ledger.signEvmTransaction(derivationPath, serializedUnsignedTx);
     const sig = signature.startsWith("0x") ? signature.slice(2) : signature;
     if (sig.length < 130 || sig.length > 132) {
       throw new Error(`Invalid signature length: ${sig.length / 2} bytes`);
@@ -301,7 +332,7 @@ export async function signEvmTransaction(
     const parsedSignature = {
       r: `0x${sig.slice(0, 64)}`,
       s: `0x${sig.slice(64, 128)}`,
-      v: parseInt(sig.slice(128, 130), 16) // v is typically 27 or 28
+      v: parseInt(sig.slice(128, 130), 16), // v is typically 27 or 28
     };
     ethersTx.signature = parsedSignature;
     signedTxHex = ethersTx.serialized;
@@ -312,43 +343,54 @@ export async function signEvmTransaction(
     signedTxHex = await wallet.signTransaction(ethersTx);
   }
   // send signed tx to the network
-  const receipt = await waitFinalize3(ctx.cAddressHex, () => web3.eth.sendSignedTransaction(signedTxHex)).catch((error: unknown) => {
-    if (
-      error &&
-      typeof error === 'object' &&
-      "innerError" in error &&
-      error.innerError &&
-      typeof error.innerError === 'object' &&
-      "message" in error.innerError
-    ) {
-      console.log(chalk.red(error.innerError.message))
-    } else if (
-      error &&
-      typeof error === 'object' &&
-      'reason' in error
-    ) {
-      console.log(chalk.red(error.reason))
-    } else {
-      console.log(chalk.red(error))
-      console.dir(error);
+  const receipt = await waitFinalize3(ctx.cAddressHex, () => web3.eth.sendSignedTransaction(signedTxHex)).catch(
+    (error: unknown) => {
+      if (
+        error &&
+        typeof error === "object" &&
+        "innerError" in error &&
+        error.innerError &&
+        typeof error.innerError === "object" &&
+        "message" in error.innerError
+      ) {
+        console.log(chalk.red(error.innerError.message));
+      } else if (error && typeof error === "object" && "reason" in error) {
+        console.log(chalk.red(error.reason));
+      } else {
+        console.log(chalk.red(error));
+        console.dir(error);
+      }
+      process.exit(1);
     }
-    process.exit(1);
-  });
+  );
   if (!receipt.transactionHash) {
-    const error = new Error('Transaction receipt missing transactionHash');
+    const error = new Error("Transaction receipt missing transactionHash");
     throw error;
   }
   return toHex(receipt.transactionHash);
 }
 
-export async function getStateOfRewards(web3: Web3, owner: string): Promise<{
+export async function getStateOfRewards(
+  web3: Web3,
+  owner: string
+): Promise<{
   unclaimedRewards: string;
   totalRewards: string;
   claimedRewards: string;
 }> {
-  const flareContractRegistryWeb3Contract = getWeb3Contract(web3, flareContractRegistryAddress, flareContractRegistryABI);
-  const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods.getContractAddressByName("ValidatorRewardManager").call();
-  const validatorRewardManagerContract = getWeb3Contract(web3, validatorRewardManagerAddress, validatorRewardManagerABI);
+  const flareContractRegistryWeb3Contract = getWeb3Contract(
+    web3,
+    flareContractRegistryAddress,
+    flareContractRegistryABI
+  );
+  const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods
+    .getContractAddressByName("ValidatorRewardManager")
+    .call();
+  const validatorRewardManagerContract = getWeb3Contract(
+    web3,
+    validatorRewardManagerAddress,
+    validatorRewardManagerABI
+  );
   if (validatorRewardManagerAddress == ZeroAddress) {
     throw new Error("ValidatorRewardManager contract address not found");
   }
@@ -386,8 +428,14 @@ export async function createSetClaimExecutorsTransaction(
     throw new Error("cAddressHex not found in context");
   }
 
-  const flareContractRegistryWeb3Contract = getWeb3Contract(web3, flareContractRegistryAddress, flareContractRegistryABI);
-  const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods.getContractAddressByName("ClaimSetupManager").call();
+  const flareContractRegistryWeb3Contract = getWeb3Contract(
+    web3,
+    flareContractRegistryAddress,
+    flareContractRegistryABI
+  );
+  const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods
+    .getContractAddressByName("ClaimSetupManager")
+    .call();
   if (claimSetupManagerAddress == ZeroAddress) {
     throw new Error("ClaimSetupManager contract address not found");
   }
@@ -395,12 +443,14 @@ export async function createSetClaimExecutorsTransaction(
   const claimSetupManagerWeb3Contract = getWeb3Contract(web3, claimSetupManagerAddress, claimSetupManagerABI);
 
   // filter out empty strings (if removing executors)
-  executors = executors.filter(executor => executor.trim() !== '');
+  executors = executors.filter((executor) => executor.trim() !== "");
 
   // check if executors are registered (and addresses are valid) and sum their fees
   let totalFee = 0n;
   for (const executor of executors) {
-    const executorInfo: [boolean, bigint] = await claimSetupManagerWeb3Contract.methods.getExecutorInfo(web3.utils.toChecksumAddress(executor)).call();
+    const executorInfo: [boolean, bigint] = await claimSetupManagerWeb3Contract.methods
+      .getExecutorInfo(web3.utils.toChecksumAddress(executor))
+      .call();
     if (!executorInfo[0]) {
       throw new Error(`Executor ${executor} is not registered`);
     }
@@ -414,20 +464,20 @@ export async function createSetClaimExecutorsTransaction(
     to: claimSetupManagerWeb3Contract.options.address,
     data: fnToEncode.encodeABI(),
     chainId: ctx.config.networkID,
-    value: totalFee.toString()
-  }
+    value: totalFee.toString(),
+  };
 
   // serialized unsigned transaction
-  const ethersTx = Transaction.from(rawTx)
+  const ethersTx = Transaction.from(rawTx);
   const hash = unPrefix0x(ethersTx.unsignedHash);
-  const forDefiHash = Buffer.from(hash, 'hex').toString('base64');
+  const forDefiHash = Buffer.from(hash, "hex").toString("base64");
 
   const unsignedTx = <UnsignedEvmTxJson>{
-    transactionType: 'EVM',
+    transactionType: "EVM",
     rawTx: rawTx,
     message: hash,
-    forDefiHash: forDefiHash
-  }
+    forDefiHash: forDefiHash,
+  };
   // save tx data
   saveUnsignedEvmTx(unsignedTx, fileId);
 
@@ -453,8 +503,14 @@ export async function createSetAllowedClaimRecipientsTransaction(
     throw new Error("cAddressHex not found in context");
   }
 
-  const flareContractRegistryWeb3Contract = getWeb3Contract(web3, flareContractRegistryAddress, flareContractRegistryABI);
-  const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods.getContractAddressByName("ClaimSetupManager").call();
+  const flareContractRegistryWeb3Contract = getWeb3Contract(
+    web3,
+    flareContractRegistryAddress,
+    flareContractRegistryABI
+  );
+  const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods
+    .getContractAddressByName("ClaimSetupManager")
+    .call();
   if (claimSetupManagerAddress == ZeroAddress) {
     throw new Error("ClaimSetupManager contract address not found");
   }
@@ -462,7 +518,7 @@ export async function createSetAllowedClaimRecipientsTransaction(
   const claimSetupManagerWeb3Contract = getWeb3Contract(web3, claimSetupManagerAddress, claimSetupManagerABI);
 
   // filter out empty strings (if removing recipients)
-  recipients = recipients.filter(recipient => recipient.trim() !== '');
+  recipients = recipients.filter((recipient) => recipient.trim() !== "");
 
   const fnToEncode = claimSetupManagerWeb3Contract.methods.setAllowedClaimRecipients(recipients);
   const rawTx: TransactionLike = {
@@ -471,20 +527,20 @@ export async function createSetAllowedClaimRecipientsTransaction(
     gasLimit: 4_000_000,
     to: claimSetupManagerWeb3Contract.options.address,
     data: fnToEncode.encodeABI(),
-    chainId: ctx.config.networkID
-  }
+    chainId: ctx.config.networkID,
+  };
 
   // serialized unsigned transaction
-  const ethersTx = Transaction.from(rawTx)
+  const ethersTx = Transaction.from(rawTx);
   const hash = unPrefix0x(ethersTx.unsignedHash);
-  const forDefiHash = Buffer.from(hash, 'hex').toString('base64');
+  const forDefiHash = Buffer.from(hash, "hex").toString("base64");
 
   const unsignedTx = <UnsignedEvmTxJson>{
-    transactionType: 'EVM',
+    transactionType: "EVM",
     rawTx: rawTx,
     message: hash,
-    forDefiHash: forDefiHash
-  }
+    forDefiHash: forDefiHash,
+  };
 
   // save tx data
   saveUnsignedEvmTx(unsignedTx, fileId);
@@ -508,7 +564,7 @@ export async function createCustomCChainTransaction(
   toAddress: string,
   data: string,
   value: string,
-  nonce: number,
+  nonce: number
 ): Promise<string> {
   const web3 = ctx.web3;
   if (!ctx.cAddressHex) {
@@ -527,20 +583,20 @@ export async function createCustomCChainTransaction(
     to: toAddress,
     value: value,
     data: data,
-    chainId: ctx.config.chainID
-  }
+    chainId: ctx.config.chainID,
+  };
 
   // serialized unsigned transaction
-  const ethersTx = Transaction.from(rawTx)
+  const ethersTx = Transaction.from(rawTx);
   const hash = unPrefix0x(ethersTx.unsignedHash);
-  const forDefiHash = Buffer.from(hash, 'hex').toString('base64');
+  const forDefiHash = Buffer.from(hash, "hex").toString("base64");
 
   const unsignedTx = <UnsignedEvmTxJson>{
-    transactionType: 'EVM',
+    transactionType: "EVM",
     rawTx: rawTx,
     message: hash,
-    forDefiHash: forDefiHash
-  }
+    forDefiHash: forDefiHash,
+  };
 
   // save tx data
   saveUnsignedEvmTx(unsignedTx, fileId);

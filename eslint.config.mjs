@@ -3,7 +3,6 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 import { defineConfig, globalIgnores } from "eslint/config";
 
-
 export default defineConfig([
   { files: ["**/*.{js,mjs,cjs,ts}"], plugins: { js }, extends: ["js/recommended"] },
   { files: ["**/*.{js,mjs,cjs,ts}"], languageOptions: { globals: globals.browser } },
@@ -32,10 +31,13 @@ export default defineConfig([
       "@typescript-eslint/no-inferrable-types": "off",
       "@typescript-eslint/no-explicit-any": "off",
       "@typescript-eslint/no-non-null-assertion": "warn",
-      "@typescript-eslint/no-unused-vars": ["warn", {
-          "varsIgnorePattern": "^_",
-          "argsIgnorePattern": "."
-      }],
+      "@typescript-eslint/no-unused-vars": [
+        "warn",
+        {
+          varsIgnorePattern: "^_",
+          argsIgnorePattern: ".",
+        },
+      ],
       // "node/no-extraneous-import": "error",
       // "node/no-extraneous-require": "error",
       // "@typescript-eslint/no-explicit-any": "off",

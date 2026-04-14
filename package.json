@@ -8,6 +8,8 @@
   "scripts": {
     "tsc": "tsc",
     "build": "rimraf dist/ && tsc -b",
+    "format:check": "prettier --check \"src/**/*.ts\" \"eslint.config.mjs\"",
+    "format:fix": "prettier --write \"src/**/*.ts\" \"eslint.config.mjs\"",
     "interactive": "bin/flare-stake-tool interactive"
   },
   "repository": {
@@ -26,6 +28,7 @@
   "author": "Flare Networks",
   "homepage": "https://github.com/flare-foundation/flare-stake-tool#readme",
   "license": "MIT",
+  "prettier": "@flarenetwork/prettier-config-flare",
   "dependencies": {
     "@avalabs/hw-app-avalanche": "^0.14.4",
     "@emotion/react": "^11.13.5",
@@ -62,6 +65,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
+    "@flarenetwork/prettier-config-flare": "^0.0.3",
     "@types/clear": "^0.1.2",
     "@types/elliptic": "^6.4.15",
     "@types/figlet": "^1.5.6",
@@ -70,6 +74,8 @@
     "@typescript-eslint/parser": "^8.17.0",
     "eslint": "^9.26.0",
     "globals": "^16.1.0",
+    "prettier": "^3.8.2",
+    "prettier-plugin-solidity": "^2.3.1",
     "rimraf": "^5.0.1",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.32.0"

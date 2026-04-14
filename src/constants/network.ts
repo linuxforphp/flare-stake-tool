@@ -1,66 +1,65 @@
-
 export interface NetworkConfig {
-  protocol: string,
-  ip: string,
-  port?: number,
-  networkID: number,
-  hrp: string,
-  chainID: number,
-  DurangoTime: Date
+  protocol: string;
+  ip: string;
+  port?: number;
+  networkID: number;
+  hrp: string;
+  chainID: number;
+  DurangoTime: Date;
 }
 
 export const localflare: NetworkConfig = {
-  protocol: 'http',
-  ip: 'localhost',
+  protocol: "http",
+  ip: "localhost",
   port: 9650,
   networkID: 162,
-  hrp: 'localflare',
+  hrp: "localflare",
   chainID: 162,
-  DurangoTime: new Date('2025-01-01T00:00:00Z')
-}
+  DurangoTime: new Date("2025-01-01T00:00:00Z"),
+};
 
 export const local: NetworkConfig = {
-  protocol: 'http',
-  ip: 'localhost',
+  protocol: "http",
+  ip: "localhost",
   port: 9650,
   networkID: 4294967295,
-  hrp: 'local',
+  hrp: "local",
   chainID: 4294967295,
-  DurangoTime: new Date('2025-01-01T00:00:00Z')
-}
+  DurangoTime: new Date("2025-01-01T00:00:00Z"),
+};
 
 export const coston: NetworkConfig = {
-  protocol: 'https',
-  ip: 'coston-api.flare.network',
+  protocol: "https",
+  ip: "coston-api.flare.network",
   networkID: 7,
-  hrp: 'coston',
+  hrp: "coston",
   chainID: 16,
-  DurangoTime: new Date('2025-07-01T12:00:00Z')
-}
+  DurangoTime: new Date("2025-07-01T12:00:00Z"),
+};
 
 export const costwo: NetworkConfig = {
-  protocol: 'https',
-  ip: 'coston2-api.flare.network',
+  protocol: "https",
+  ip: "coston2-api.flare.network",
   networkID: 114,
-  hrp: 'costwo',
+  hrp: "costwo",
   chainID: 114,
-  DurangoTime: new Date('2025-06-24T12:00:00Z')
-}
+  DurangoTime: new Date("2025-06-24T12:00:00Z"),
+};
 
 export const songbird: NetworkConfig = {
-  protocol: 'https',
-  ip: 'songbird-api.flare.network',
+  protocol: "https",
+  ip: "songbird-api.flare.network",
   networkID: 5,
-  hrp: 'songbird',
+  hrp: "songbird",
   chainID: 19,
-  DurangoTime: new Date('2025-07-22T12:00:00Z')
-}
+  DurangoTime: new Date("2025-07-22T12:00:00Z"),
+};
 
 export const flare: NetworkConfig = {
-  protocol: 'https',
-  ip: 'flare-api.flare.network',
+  protocol: "https",
+  ip: "flare-api.flare.network",
   networkID: 14,
-  hrp: 'flare',
+  hrp: "flare",
   chainID: 14,
-  DurangoTime: new Date('2025-08-05T12:00:00Z')
-}
+  DurangoTime: new Date("2025-08-05T12:00:00Z"),
+};

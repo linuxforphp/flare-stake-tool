@@ -1,32 +1,24 @@
-import fs from 'fs'
-import Web3 from 'web3'
-import { utils } from '@flarenetwork/flarejs';
-import { Context, ContextFile } from './interfaces'
-import {
-  flare,
-  songbird,
-  costwo,
-  coston,
-  localflare,
-  local,
-  NetworkConfig
-} from './constants/network'
+import fs from "fs";
+import Web3 from "web3";
+import { utils } from "@flarenetwork/flarejs";
+import { Context, ContextFile } from "./interfaces";
+import { flare, songbird, costwo, coston, localflare, local, NetworkConfig } from "./constants/network";
 import {
   publicKeyToBech32AddressString,
   publicKeyToEthereumAddressString,
   privateKeyToPublicKey,
   decodePublicKey,
-  unPrefix0x
-} from './utils'
-import * as dotenv from 'dotenv';
+  unPrefix0x,
+} from "./utils";
+import * as dotenv from "dotenv";
 
 /**
  * @param network
  * @returns {string} The RPC url of the given network
  */
 export function rpcUrlFromNetworkConfig(network: string): string {
-  const config: NetworkConfig = getNetworkConfig(network)
-  return `${config.protocol}://${config.ip}/ext/bc/C/rpc`
+  const config: NetworkConfig = getNetworkConfig(network);
+  return `${config.protocol}://${config.ip}/ext/bc/C/rpc`;
 }
 
 /**
@@ -35,8 +27,8 @@ export function rpcUrlFromNetworkConfig(network: string): string {
  * @returns - context
  */
 export function readContextFile(ctxFile: string): ContextFile {
-  const file = fs.readFileSync(ctxFile, 'utf8')
-  return JSON.parse(file) as ContextFile
+  const file = fs.readFileSync(ctxFile, "utf8");
+  return JSON.parse(file) as ContextFile;
 }
 
 /**
@@ -46,13 +38,8 @@ export function readContextFile(ctxFile: string): ContextFile {
  * @returns - returns the context from .env file
  */
 export function contextEnv(path: string, network: string): Context {
-  dotenv.config({ path: path })
-  return getContext(
-    network,
-    process.env.PUBLIC_KEY,
-    process.env.PRIVATE_KEY_HEX,
-    process.env.PRIVATE_KEY_CB58
-  )
+  dotenv.config({ path: path });
+  return getContext(network, process.env.PUBLIC_KEY, process.env.PRIVATE_KEY_HEX, process.env.PRIVATE_KEY_CB58);
 }
 
 /**
@@ -61,8 +48,8 @@ export function contextEnv(path: string, network: string): Context {
  * @returns returns the context
  */
 export function contextFile(ctxFile: string): Context {
-  const ctx = readContextFile(ctxFile)
-  return getContext(ctx.network, ctx.publicKey)
+  const ctx = readContextFile(ctxFile);
+  return getContext(ctx.network, ctx.publicKey);
 }
 
 /**
@@ -71,8 +58,8 @@ export function contextFile(ctxFile: string): Context {
  * @returns returns the network from the context
  */
 export function networkFromContextFile(ctxFile: string): string {
-  const ctx = readContextFile(ctxFile)
-  return ctx.network
+  const ctx = readContextFile(ctxFile);
+  return ctx.network;
 }
 
 /**
@@ -89,7 +76,7 @@ export function getContext(
   privateKeyHex?: string,
   privateKeyCB58?: string
 ): Context {
-  return context(getNetworkConfig(network), publicKey, privateKeyHex, privateKeyCB58, network)
+  return context(getNetworkConfig(network), publicKey, privateKeyHex, privateKeyCB58, network);
 }
 
 /**
@@ -98,21 +85,21 @@ export function getContext(
  * @returns the network configuration
  */
 export function getNetworkConfig(network: string | undefined): NetworkConfig {
-  let networkConfig
-  if (network == 'flare' || network === undefined) {
-    networkConfig = flare
-  } else if (network == 'songbird') {
-    networkConfig = songbird
-  } else if (network == 'costwo') {
-    networkConfig = costwo
-  } else if (network == 'coston') {
-    networkConfig = coston
-  } else if (network == 'localflare') {
-    networkConfig = localflare
-  } else if (network == 'local') {
-    networkConfig = local
-  } else throw Error('Invalid network')
-  return networkConfig
+  let networkConfig;
+  if (network == "flare" || network === undefined) {
+    networkConfig = flare;
+  } else if (network == "songbird") {
+    networkConfig = songbird;
+  } else if (network == "costwo") {
+    networkConfig = costwo;
+  } else if (network == "coston") {
+    networkConfig = coston;
+  } else if (network == "localflare") {
+    networkConfig = localflare;
+  } else if (network == "local") {
+    networkConfig = local;
+  } else throw Error("Invalid network");
+  return networkConfig;
 }
 
 /**
@@ -131,11 +118,10 @@ export function context(
   privkCB58?: string,
   network?: string
 ): Context {
-
-  const { protocol, ip, port, networkID: _, chainID } = config
+  const { protocol, ip, port, networkID: _, chainID } = config;
   // those two addresses should be derived for most cli applications
-  let cAddressHex: string | undefined
-  let addressBech32: string | undefined
+  let cAddressHex: string | undefined;
+  let addressBech32: string | undefined;
 
   // derive private key in both cb58 and hex if only one is provided
   if (privkHex !== undefined && privkHex !== "") {
@@ -149,50 +135,50 @@ export function context(
 
   // derive the public key coords if private key is present and check that they match
   // the public key if provided
-  let publicKeyPair: [Buffer, Buffer] | undefined
+  let publicKeyPair: [Buffer, Buffer] | undefined;
   if (publicKey) {
-    publicKeyPair = decodePublicKey(publicKey)
-    publicKey = '04' + Buffer.concat(publicKeyPair).toString('hex') // standardize
+    publicKeyPair = decodePublicKey(publicKey);
+    publicKey = "04" + Buffer.concat(publicKeyPair).toString("hex"); // standardize
   }
   if (privkHex) {
-    const [pubX, pubY] = privateKeyToPublicKey(Buffer.from(privkHex, 'hex'))
+    const [pubX, pubY] = privateKeyToPublicKey(Buffer.from(privkHex, "hex"));
     if (publicKey) {
       if (!publicKeyPair) {
-        throw Error('public key pair is not defined')
+        throw Error("public key pair is not defined");
       }
       if (!publicKeyPair[0].equals(pubX) || !publicKeyPair[1].equals(pubY)) {
-        throw Error('provided private key does not match the public key')
+        throw Error("provided private key does not match the public key");
       }
     }
-    publicKeyPair = [pubX, pubY]
+    publicKeyPair = [pubX, pubY];
     if (!publicKey) {
-      publicKey = '04' + Buffer.concat(publicKeyPair).toString('hex') // standardize
+      publicKey = "04" + Buffer.concat(publicKeyPair).toString("hex"); // standardize
     }
   }
 
-  const path = '/ext/bc/C/rpc'
-  const iport = port ? `${ip}:${port}` : `${ip}`
-  const rpcurl = `${protocol}://${iport}`
-  const web3 = new Web3(`${rpcurl}${path}`)
+  const path = "/ext/bc/C/rpc";
+  const iport = port ? `${ip}:${port}` : `${ip}`;
+  const rpcurl = `${protocol}://${iport}`;
+  const web3 = new Web3(`${rpcurl}${path}`);
 
   // derive addresses from public key if provided (bech32 is later derived again)
   if (publicKey) {
-    cAddressHex = publicKeyToEthereumAddressString(publicKey)
-    cAddressHex = web3.utils.toChecksumAddress(cAddressHex) // add checksum
-    addressBech32 = publicKeyToBech32AddressString(publicKey, config.hrp)
+    cAddressHex = publicKeyToEthereumAddressString(publicKey);
+    cAddressHex = web3.utils.toChecksumAddress(cAddressHex); // add checksum
+    addressBech32 = publicKeyToBech32AddressString(publicKey, config.hrp);
   }
 
-  const pAddressBech32 = /*pAddressStrings[0] ||*/ `P-${addressBech32}`
-  const cAddressBech32 = /*cAddressStrings[0] ||*/ `C-${addressBech32}`
+  const pAddressBech32 = /*pAddressStrings[0] ||*/ `P-${addressBech32}`;
+  const cAddressBech32 = /*cAddressStrings[0] ||*/ `C-${addressBech32}`;
 
   if (privkHex) {
-    const prefixPrivkHex = privkHex.startsWith('0x') ? privkHex : `0x${privkHex}`
-    const cAccount = web3.eth.accounts.privateKeyToAccount(prefixPrivkHex)
-    const _cAddressHex = cAccount.address
+    const prefixPrivkHex = privkHex.startsWith("0x") ? privkHex : `0x${privkHex}`;
+    const cAccount = web3.eth.accounts.privateKeyToAccount(prefixPrivkHex);
+    const _cAddressHex = cAccount.address;
     if (cAddressHex && cAddressHex.toLowerCase() !== _cAddressHex.toLowerCase()) {
-      throw Error('C-chain address does not match private key')
+      throw Error("C-chain address does not match private key");
     }
-    cAddressHex = _cAddressHex
+    cAddressHex = _cAddressHex;
   }
 
   return {
@@ -206,12 +192,12 @@ export function context(
     cAddressHex: cAddressHex,
     config: config,
     chainID: chainID,
-    network: network
-  }
+    network: network,
+  };
 }
 
 export function isDurango(network: string): boolean {
-  const cfg = getNetworkConfig(network)
-  if (!cfg) return false
-  return Date.now() >= cfg.DurangoTime.getTime()
+  const cfg = getNetworkConfig(network);
+  if (!cfg) return false;
+  return Date.now() >= cfg.DurangoTime.getTime();
 }
