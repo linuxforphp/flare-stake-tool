@@ -80,7 +80,7 @@ export interface TxParams {
 
 export interface ExportCTxParams extends TxParams {
   amount: BN;
-  exportFee?: BN;
+  exportFee?: BN | undefined;
 }
 
 export interface ExportPTxParams extends TxParams {
@@ -88,7 +88,7 @@ export interface ExportPTxParams extends TxParams {
 }
 
 export interface ImportCTxParams extends TxParams {
-  importFee?: BN;
+  importFee?: BN | undefined;
 }
 
 export type ImportPTxParams = TxParams;

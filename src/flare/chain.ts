@@ -9,12 +9,12 @@ import { CurrentDelegatorData, CurrentValidatorData, PStake } from "./interfaces
 import { getContext } from "./context";
 
 export function getWeb3(network: string): Web3 {
-  let web3 = new Web3(settings.RPC[network]);
+  const web3 = new Web3(settings.RPC[network]);
   return web3;
 }
 
 export async function getCBalance(network: string, cAddress: string): Promise<BN> {
-  let balance = await getWeb3(network).eth.getBalance(cAddress);
+  const balance = await getWeb3(network).eth.getBalance(cAddress);
   return utils.weiToGwei(balance);
 }
 
@@ -60,11 +60,11 @@ export async function getCurrentPStakes(network: string): Promise<Array<PStake>>
   const pvmapi = new pvm.PVMApi(settings.URL[network]);
   const { validators } = await pvmapi.getCurrentValidators();
   const stakes = Array<PStake>();
-  for (let validator of validators) {
+  for (const validator of validators) {
     stakes.push(await _parsePStake(network, validator, "validator"));
-    let delegators = validator.delegators as Array<CurrentDelegatorData>;
+    const delegators = validator.delegators as Array<CurrentDelegatorData>;
     if (delegators) {
-      for (let delegator of delegators) {
+      for (const delegator of delegators) {
         stakes.push(await _parsePStake(network, delegator, "delegator"));
       }
     }
@@ -83,7 +83,7 @@ export async function getPStakesTo(network: string, pAddress: string, stakes?: A
   if (!stakes) {
     stakes = await getPStakes(network);
   }
-  let nodeIds = stakes
+  const nodeIds = stakes
     .filter((s) => s.type === "validator" && pubk.equalPAddress(network, s.address, pAddress))
     .map((s) => s.nodeId);
   return stakes.filter((s) => nodeIds.includes(s.nodeId));
@@ -101,29 +101,29 @@ async function _parsePStake(
     stake.validationRewardOwner.addresses &&
     stake.validationRewardOwner.addresses.length > 0
   ) {
-    address = stake.validationRewardOwner.addresses[0];
+    address = stake.validationRewardOwner.addresses[0]!;
   } else if (
     "delegationRewardOwner" in stake &&
     stake.delegationRewardOwner &&
     stake.delegationRewardOwner.addresses &&
     stake.delegationRewardOwner.addresses.length > 0
   ) {
-    address = stake.delegationRewardOwner.addresses[0];
+    address = stake.delegationRewardOwner.addresses[0]!;
   } else if (
     "rewardOwner" in stake &&
     stake.rewardOwner &&
     stake.rewardOwner.addresses &&
     stake.rewardOwner.addresses.length > 0
   ) {
-    address = stake.rewardOwner.addresses[0];
+    address = stake.rewardOwner.addresses[0]!;
   } else {
-    let tx = await txs.getStakeTransaction(network, stake.txID);
+    const tx = await txs.getStakeTransaction(network, stake.txID);
     if (tx instanceof pvmSerial.AddDelegatorTx || tx instanceof pvmSerial.AddValidatorTx) {
-      address = tx.getRewardsOwner().addrs[0].toHex();
+      address = tx.getRewardsOwner().addrs[0]!.toHex();
     } else if (tx instanceof pvmSerial.AddPermissionlessDelegatorTx) {
-      address = tx.getDelegatorRewardsOwner().addrs[0].toHex();
+      address = tx.getDelegatorRewardsOwner().addrs[0]!.toHex();
     } else if (tx instanceof pvmSerial.AddPermissionlessValidatorTx) {
-      address = tx.getValidatorRewardsOwner().addrs[0].toHex();
+      address = tx.getValidatorRewardsOwner().addrs[0]!.toHex();
     } else {
       throw new Error("Unknown stake transaction type");
     }
@@ -144,36 +144,36 @@ async function _parsePStake(
 export async function getCTxBaseFee(network: string): Promise<BN> {
   // let avajs = getAvalanche(network)
   // let feeWei = new BN(utils.toHex(await avajs.CChain().getBaseFee(), false), "hex")
-  let feeEstimate = await estimateEIP1559Fee(network);
-  let feeWei = feeEstimate[0] - feeEstimate[1];
+  const feeEstimate = await estimateEIP1559Fee(network);
+  const feeWei = feeEstimate[0] - feeEstimate[1];
   return utils.weiToGweiCeil(feeWei);
 }
 
 export async function estimateEIP1559Fee(network: string): Promise<[bigint, bigint]> {
-  let web3 = getWeb3(network);
-  let feeHistory = await web3.eth.getFeeHistory(4, "latest", ["10", "50"]);
+  const web3 = getWeb3(network);
+  const feeHistory = await web3.eth.getFeeHistory(4, "latest", ["10", "50"]);
 
   let baseFee = BigInt(0);
   let gasUsedRatio = 0;
   let priorityFee10 = BigInt(0);
   let priorityFee50 = BigInt(0);
   for (let i = 0; i < 4; i++) {
-    let factor = BigInt(10 * (i + 1));
-    baseFee += factor * BigInt(feeHistory.baseFeePerGas[i]);
-    gasUsedRatio += Number(feeHistory.gasUsedRatio[i]); // feeHistory.gasUsedRatio is number
-    priorityFee10 += factor * BigInt(feeHistory.reward[i][0]);
-    priorityFee50 += factor * BigInt(feeHistory.reward[i][1]);
+    const factor = BigInt(10 * (i + 1));
+    baseFee += factor * BigInt(feeHistory.baseFeePerGas[i]!);
+    gasUsedRatio += Number(feeHistory.gasUsedRatio[i]!); // feeHistory.gasUsedRatio is number
+    priorityFee10 += factor * BigInt(feeHistory.reward[i]![0]!);
+    priorityFee50 += factor * BigInt(feeHistory.reward[i]![1]!);
   }
   baseFee = baseFee / BigInt(100);
-  let priorityFee = (gasUsedRatio / 4 < 0.9 ? priorityFee10 : priorityFee50) / BigInt(100);
-  let maxFee = BigInt(2) * baseFee + priorityFee;
+  const priorityFee = (gasUsedRatio / 4 < 0.9 ? priorityFee10 : priorityFee50) / BigInt(100);
+  const maxFee = BigInt(2) * baseFee + priorityFee;
 
   return [maxFee, priorityFee];
 }
 
 export async function numberOfCTxs(network: string, cAddress: string): Promise<number> {
-  let web3 = getWeb3(network);
-  let nonce = await web3.eth.getTransactionCount(cAddress);
+  const web3 = getWeb3(network);
+  const nonce = await web3.eth.getTransactionCount(cAddress);
   return Number(nonce);
 }
 
@@ -193,7 +193,7 @@ export async function getPTxDefaultFee(network: string): Promise<BN> {
 
 function sumUtxoTransferableOutputs(utxos: Array<Utxo>): BN {
   let balance = 0n;
-  for (let utxo of utxos) {
+  for (const utxo of utxos) {
     const out = utxo.output;
     if (futils.isTransferOut(out)) {
       balance += out.amount();

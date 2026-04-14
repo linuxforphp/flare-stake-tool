@@ -1,7 +1,7 @@
 import fs from "fs";
 import { UnsignedEvmTxJson, SignedEvmTxJson } from "../interfaces";
 import { forDefiDirectory, forDefiSignedTxnDirectory, forDefiUnsignedTxnDirectory } from "../constants/forDefi";
-import Web3 from "web3";
+import Web3, { type ContractAbi } from "web3";
 import { sleepms } from "../utils";
 
 export function saveUnsignedEvmTx(unsignedTx: UnsignedEvmTxJson, id: string): void {
@@ -41,9 +41,9 @@ export function waitFinalize3Factory(web3: Web3) {
     let totalDelay = 0;
     const nonce = await web3.eth.getTransactionCount(address);
     const result = await func();
-    let backoff = 1.5;
+    const backoff = 1.5;
     let cnt = 0;
-    while ((await web3.eth.getTransactionCount(address)) == nonce) {
+    while ((await web3.eth.getTransactionCount(address)) === nonce) {
       // if test is enabled, it will skip the timeout as it was getting stuck here
       if (!test)
         await new Promise<void>((resolve) => {
@@ -62,7 +62,7 @@ export function waitFinalize3Factory(web3: Web3) {
   };
 }
 
-export function getWeb3Contract(web3: Web3, address: string, abi: any) {
+export function getWeb3Contract(web3: Web3, address: string, abi: ContractAbi) {
   return new web3.eth.Contract(abi, address);
 }
 
@@ -79,9 +79,9 @@ export function getAbi(abiPath: string) {
 
 export function waitFinalize(web3: Web3, options: WaitFinalizeOptions = waitFinalizeDefaults) {
   return async <T>(address: string, func: () => Promise<T>): Promise<T> => {
-    let nonce = await web3.eth.getTransactionCount(address);
-    let res: T = await func();
-    while ((await web3.eth.getTransactionCount(address)) == nonce) {
+    const nonce = await web3.eth.getTransactionCount(address);
+    const res: T = await func();
+    while ((await web3.eth.getTransactionCount(address)) === nonce) {
       await sleepms(options.sleepMS);
     }
     for (let i = 0; i < options.retries; i++) {

@@ -38,7 +38,7 @@ export function isPublicKey(value: string): boolean {
 }
 
 export function publicKeyToCAddress(publicKey: string) {
-  let uncompressed = utils.toBuffer(uncompressedPublicKey(publicKey, false));
+  const uncompressed = utils.toBuffer(uncompressedPublicKey(publicKey, false));
   return normalizeCAddress(utils.toHex(ethutil.publicToAddress(uncompressed)));
 }
 
@@ -55,19 +55,19 @@ export function normalizeCAddress(cAddress: string): string {
 }
 
 export function publicKeyToPAddress(network: string, publicKey: string): string {
-  let compressed = utils.toBuffer(compressedPublicKey(publicKey));
-  let address = ethutil.ripemd160(ethutil.sha256(compressed), false);
-  let hrp = settings.HRP[network];
+  const compressed = utils.toBuffer(compressedPublicKey(publicKey));
+  const address = ethutil.ripemd160(ethutil.sha256(compressed), false);
+  const hrp = settings.HRP[network]!;
   return normalizePAddress(network, bech32.encode(hrp, bech32.toWords(address)));
 }
 
 export function isPAddress(network: string, value: string): boolean {
-  return (value.startsWith("P-") ? value.slice(2) : value).startsWith(settings.HRP[network]);
+  return (value.startsWith("P-") ? value.slice(2) : value).startsWith(settings.HRP[network]!);
 }
 
 export function equalPAddress(network: string, value1: string, value2: string): boolean {
-  let value1Hex = utils.isHex(value1) ? value1 : pAddressToHex(value1.startsWith("P-") ? value1.slice(2) : value1);
-  let value2Hex = utils.isHex(value2) ? value2 : pAddressToHex(value2.startsWith("P-") ? value2.slice(2) : value2);
+  const value1Hex = utils.isHex(value1) ? value1 : pAddressToHex(value1.startsWith("P-") ? value1.slice(2) : value1);
+  const value2Hex = utils.isHex(value2) ? value2 : pAddressToHex(value2.startsWith("P-") ? value2.slice(2) : value2);
   return utils.isEqualHex(value1Hex, value2Hex) && isPAddress(network, pAddressToBech(network, value1Hex));
 }
 
@@ -80,7 +80,7 @@ export function pAddressToBytes20(pAddress: string) {
 }
 
 export function pAddressToBech(network: string, pAddressHex: string): string {
-  let hrp = settings.HRP[network];
+  const hrp = settings.HRP[network]!;
   return bech32.encode(hrp, bech32.toWords(utils.toBuffer(pAddressHex)));
 }
 
@@ -95,13 +95,13 @@ export function normalizePAddress(network: string, pAddress: string): string {
 }
 
 export function recoverPublicKeyFromMsg(message: string, signature: string): string {
-  let msg = utils.toBuffer(message);
-  let sig = ethutil.fromRpcSig(utils.toHex(signature));
+  const msg = utils.toBuffer(message);
+  const sig = ethutil.fromRpcSig(utils.toHex(signature));
   return normalizePublicKey(utils.toHex(ethutil.ecrecover(msg, sig.v, sig.r, sig.s)));
 }
 
 export function recoverPublicKeyFromEthMsg(message: string, signature: string): string {
-  let hashedMsg = getHashedEthMsg(message);
+  const hashedMsg = getHashedEthMsg(message);
   return recoverPublicKeyFromMsg(hashedMsg, signature);
 }
 
@@ -111,7 +111,7 @@ export function getHashedEthMsg(message: string): string {
 
 function _getKeyPair(publicKey: string): ec.KeyPair {
   publicKey = utils.toHex(publicKey, false);
-  if (publicKey.length == 128) {
+  if (publicKey.length === 128) {
     publicKey = "04" + publicKey;
   }
   return secp256k1.keyFromPublic(publicKey, "hex");
@@ -130,7 +130,7 @@ export function compressPublicKey(publicKey: Uint8Array): Uint8Array {
   const y = publicKey.slice(33, 65);
 
   // Determine the parity of the y coordinate
-  const prefix = y[y.length - 1] % 2 === 0 ? 0x02 : 0x03;
+  const prefix = y[y.length - 1]! % 2 === 0 ? 0x02 : 0x03;
 
   // Return the compressed public key
   return Buffer.concat([Buffer.from([prefix]), x]);

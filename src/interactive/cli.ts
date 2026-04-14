@@ -51,10 +51,10 @@ export async function interactiveCli(baseargv: string[]) {
 
     // First 4 info functions
     if (["addresses", "balance", "network", "validators"].includes(task)) {
-      if (walletProperties.wallet == "ledger") {
+      if (walletProperties.wallet === "ledger") {
         const argsInfo = [...baseargv.slice(0, 2), "info", task, `--ctx-file=ctx.json`];
         await program.parseAsync(argsInfo);
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.path && walletProperties.network) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.path && walletProperties.network) {
         const argsInfo = [
           ...baseargv.slice(0, 2),
           "info",
@@ -70,8 +70,8 @@ export async function interactiveCli(baseargv: string[]) {
     }
 
     // Functions for export and import to move funds between chains
-    else if (task == "CP" || task == "PC") {
-      if (walletProperties.wallet == "ledger" && fileExists("ctx.json")) {
+    else if (task === "CP" || task === "PC") {
+      if (walletProperties.wallet === "ledger" && fileExists("ctx.json")) {
         const {
           network: ctxNetwork,
           derivationPath: ctxDerivationPath,
@@ -81,7 +81,7 @@ export async function interactiveCli(baseargv: string[]) {
         if (ctxNetwork && ctxDerivationPath) {
           // if exportPC, default amount is total balance of P chain minus fees
           let amount;
-          if (task.slice(0, 1) == "P" && ctxPAddress) {
+          if (task.slice(0, 1) === "P" && ctxPAddress) {
             const exportFee = await getPTxDefaultFee(ctxNetwork);
             const pBalance = await getPBalance(ctxNetwork, ctxPAddress);
             const defaultAmount = pBalance.sub(exportFee);
@@ -104,12 +104,12 @@ export async function interactiveCli(baseargv: string[]) {
             "--ledger",
           ];
           // ask for fees if its exportCP transaction
-          if (task.slice(0, 1) == "C") {
+          if (task.slice(0, 1) === "C") {
             const exportFees = await prompts.fees(DEFAULT_EVM_TX_FEE);
             argsExport.push("-f", `${exportFees.fees}`);
             // for exportCP we wait for the finalization before doing import
             console.log("Please approve export transaction");
-            await waitFinalize<any>(getContext(ctxNetwork, publicKey), program.parseAsync(argsExport));
+            await waitFinalize<unknown>(getContext(ctxNetwork, publicKey), program.parseAsync(argsExport));
             console.log(chalk.green("Transaction finalized!"));
           } else {
             console.log("Please approve export transaction");
@@ -127,7 +127,7 @@ export async function interactiveCli(baseargv: string[]) {
             "--ledger",
           ];
           // ask for fees if its importTxPC
-          if (task.slice(0, 1) == "P") {
+          if (task.slice(0, 1) === "P") {
             const importFees = await prompts.fees(DEFAULT_EVM_TX_FEE);
             argsImport.push("-f", `${importFees.fees}`);
           }
@@ -136,7 +136,7 @@ export async function interactiveCli(baseargv: string[]) {
         } else {
           console.log("Missing params in ctx file");
         }
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.network && walletProperties.path) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.network && walletProperties.path) {
         // explicitly throw error when ctx.json doesn't exist
         let amount;
         const network = walletProperties.network;
@@ -146,7 +146,7 @@ export async function interactiveCli(baseargv: string[]) {
           throw new Error("Context does not have a valid pAddressBech32");
         }
         // if exportPC, default amount is total balance of P chain minus fees
-        if (task.slice(0, 1) == "P" && ctxPAddress) {
+        if (task.slice(0, 1) === "P" && ctxPAddress) {
           const exportFee = await getPTxDefaultFee(network);
           const pBalance = await getPBalance(network, ctxPAddress);
           const defaultAmount = pBalance.sub(exportFee);
@@ -166,10 +166,10 @@ export async function interactiveCli(baseargv: string[]) {
           "--get-hacked",
         ];
         // ask for fees if its exportCP transaction
-        if (task.slice(0, 1) == "C") {
+        if (task.slice(0, 1) === "C") {
           const exportFees = await prompts.baseFee(DEFAULT_EVM_TX_BASE_FEE);
           argsExport.push("-f", `${exportFees.baseFee}`);
-          await waitFinalize<any>(
+          await waitFinalize<unknown>(
             contextEnv(walletProperties.path, walletProperties.network),
             program.parseAsync(argsExport)
           );
@@ -186,7 +186,7 @@ export async function interactiveCli(baseargv: string[]) {
           "--get-hacked",
         ];
         // ask for fees if its importTxPC
-        if (task.slice(0, 1) == "P") {
+        if (task.slice(0, 1) === "P") {
           const exportFees = await prompts.baseFee(DEFAULT_EVM_TX_BASE_FEE);
           argsImport.push("-f", `${exportFees.baseFee}`);
         }
@@ -196,7 +196,7 @@ export async function interactiveCli(baseargv: string[]) {
       }
     } else if (task === "transfer") {
       // transfer funds between p-chain addresses
-      if (walletProperties.wallet == "ledger" && fileExists("ctx.json")) {
+      if (walletProperties.wallet === "ledger" && fileExists("ctx.json")) {
         const {
           network: ctxNetwork,
           derivationPath: ctxDerivationPath,
@@ -226,7 +226,7 @@ export async function interactiveCli(baseargv: string[]) {
             console.log("Missing values for certain params");
           }
         }
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.network && walletProperties.path) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.network && walletProperties.path) {
         const { amount, transferAddress } = await getDetailsForTransfer(task);
         const argsValidator = [
           ...baseargv.slice(0, 2),
@@ -247,8 +247,8 @@ export async function interactiveCli(baseargv: string[]) {
     }
 
     // Adding a validator
-    else if ("stake" == task) {
-      if (walletProperties.wallet == "ledger" && fileExists("ctx.json")) {
+    else if ("stake" === task) {
+      if (walletProperties.wallet === "ledger" && fileExists("ctx.json")) {
         const {
           network: ctxNetwork,
           derivationPath: ctxDerivationPath,
@@ -290,7 +290,7 @@ export async function interactiveCli(baseargv: string[]) {
             console.log("Missing values for certain params");
           }
         }
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.network && walletProperties.path) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.network && walletProperties.path) {
         const { amount, nodeId, startTime, endTime, delegationFee, popBLSPublicKey, popBLSSignature } =
           await getDetailsForDelegation(task, isDurango(walletProperties.network));
         if (!popBLSPublicKey || !popBLSSignature) {
@@ -325,8 +325,8 @@ export async function interactiveCli(baseargv: string[]) {
     }
 
     // Delegating to a Validator
-    else if ("delegate" == task) {
-      if (walletProperties.wallet == "ledger" && fileExists("ctx.json")) {
+    else if ("delegate" === task) {
+      if (walletProperties.wallet === "ledger" && fileExists("ctx.json")) {
         const {
           network: ctxNetwork,
           derivationPath: ctxDerivationPath,
@@ -359,7 +359,7 @@ export async function interactiveCli(baseargv: string[]) {
         } else {
           console.log("Missing params in ctx file");
         }
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.network && walletProperties.path) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.network && walletProperties.path) {
         const { amount, nodeId, startTime, endTime } = await getDetailsForDelegation(
           task,
           isDurango(walletProperties.network)
@@ -387,11 +387,11 @@ export async function interactiveCli(baseargv: string[]) {
     }
 
     // Mirror funds
-    else if ("mirror" == task) {
-      if (walletProperties.wallet == "ledger") {
+    else if ("mirror" === task) {
+      if (walletProperties.wallet === "ledger") {
         const argsInfo = [...baseargv.slice(0, 2), "info", task, `--ctx-file=ctx.json`];
         await program.parseAsync(argsInfo);
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.path && walletProperties.network) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.path && walletProperties.network) {
         const argsInfo = [
           ...baseargv.slice(0, 2),
           "info",
@@ -404,13 +404,13 @@ export async function interactiveCli(baseargv: string[]) {
       } else {
         console.log("Incorrect arguments passed!");
       }
-    } else if ("import" == task) {
+    } else if ("import" === task) {
       const importDestChain = await prompts.importTrxType();
       let trxType;
-      if (importDestChain.type == "P") trxType = "CP";
-      if (importDestChain.type == "C") trxType = "PC";
+      if (importDestChain.type === "P") trxType = "CP";
+      if (importDestChain.type === "C") trxType = "PC";
 
-      if (walletProperties.wallet == "ledger" && fileExists("ctx.json")) {
+      if (walletProperties.wallet === "ledger" && fileExists("ctx.json")) {
         const { network: ctxNetwork, derivationPath: ctxDerivationPath } = readInfoFromCtx("ctx.json");
         if (ctxNetwork && ctxDerivationPath) {
           const argsImport = [
@@ -424,7 +424,7 @@ export async function interactiveCli(baseargv: string[]) {
             "--ledger",
           ];
           // ask for fees if its importTxPC
-          if (importDestChain.type == "C") {
+          if (importDestChain.type === "C") {
             const importFees = await prompts.fees(DEFAULT_EVM_TX_FEE);
             argsImport.push("-f", `${importFees.fees}`);
           }
@@ -433,7 +433,7 @@ export async function interactiveCli(baseargv: string[]) {
         } else {
           console.log("Missing params in ctx file");
         }
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.network && walletProperties.path) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.network && walletProperties.path) {
         const argsImport = [
           ...baseargv.slice(0, 2),
           "transaction",
@@ -443,7 +443,7 @@ export async function interactiveCli(baseargv: string[]) {
           "--get-hacked",
         ];
         // ask for fees if its importTxPC
-        if (importDestChain.type == "C") {
+        if (importDestChain.type === "C") {
           const importFees = await prompts.baseFee(DEFAULT_EVM_TX_BASE_FEE);
           argsImport.push("-f", `${importFees.baseFee}`);
         }
@@ -452,8 +452,8 @@ export async function interactiveCli(baseargv: string[]) {
       } else {
         console.log("Incorrect arguments passed!");
       }
-    } else if ("claim" == task) {
-      if (walletProperties.wallet == "ledger" && fileExists("ctx.json")) {
+    } else if ("claim" === task) {
+      if (walletProperties.wallet === "ledger" && fileExists("ctx.json")) {
         const {
           network: ctxNetwork,
           derivationPath: ctxDerivationPath,
@@ -506,7 +506,7 @@ export async function interactiveCli(baseargv: string[]) {
         } else {
           console.log("Missing params in ctx file");
         }
-      } else if (walletProperties.wallet == "privateKey" && walletProperties.network && walletProperties.path) {
+      } else if (walletProperties.wallet === "privateKey" && walletProperties.network && walletProperties.path) {
         const ctx: Context = contextEnv(walletProperties.path, walletProperties.network);
         const ctxCAddress = ctx.cAddressHex;
         if (!ctxCAddress) {
@@ -548,7 +548,7 @@ export async function interactiveCli(baseargv: string[]) {
       }
     }
     // exit the interactive cli
-    else if ("quit" == task) {
+    else if ("quit" === task) {
       // exit the application
       logInfo("Exiting interactive cli.");
       process.exit(0);
@@ -562,7 +562,7 @@ async function connectWallet(): Promise<ConnectWalletInterface> {
   const walletPrompt = await prompts.connectWallet();
   const wallet: string = walletPrompt.wallet;
 
-  if (wallet == "privateKey") {
+  if (wallet === "privateKey") {
     const pvtKeyPath = await prompts.pvtKeyPath();
     const path = pvtKeyPath.pvtKeyPath;
     // check if the file exists
@@ -573,7 +573,7 @@ async function connectWallet(): Promise<ConnectWalletInterface> {
     // check if the file is a valid private key
     contextEnv(path, network);
     return { wallet, path, network };
-  } else if (wallet == "ledger") {
+  } else if (wallet === "ledger") {
     const isCreateCtx = await getCtxStatus(wallet);
     let network;
     if (isCreateCtx) {
@@ -642,7 +642,7 @@ function createChoicesFromAddress(pathList: DerivedAddress[]): string[] {
   const choiceList: string[] = [];
 
   for (let i = 0; i < 10; i++) {
-    const choice = pathList[i].ethAddress;
+    const choice = pathList[i]!.ethAddress;
     choiceList.push(`${i + 1}. ${choice}`);
   }
 
@@ -711,7 +711,7 @@ async function getDetailsForDelegation(task: string, isDurango: boolean): Promis
     startTime: startTime,
     endTime: endTime,
   };
-  if (task == "stake") {
+  if (task === "stake") {
     const fee = await prompts.delegationFee();
     const popBLSPublicKey = await prompts.popBLSPublicKey();
     const popBLSSignature = await prompts.popBLSSignature();
@@ -746,7 +746,7 @@ async function getDetailsForTransfer(task: string): Promise<TransferDetailsInter
 //    popBLSPublicKey: popBLSPublicKey,
 //    popBLSSignature: popBLSSignature
 //  }
-//  if (task == 'stake') {
+//  if (task === 'stake') {
 //    const fee = await prompts.delegationFee()
 //    return {
 //    TODO: popBLS stuff?
@@ -766,7 +766,7 @@ export async function getPathsAndAddresses(
   const PATH_LIST = [];
 
   for (let i = 0; i < 10; i++) {
-    if (derivationMode == "ledger_live") {
+    if (derivationMode === "ledger_live") {
       PATH_LIST.push(LEDGER_LIVE_BASE_PATH + i + "'/0/0");
     } else {
       PATH_LIST.push(BIP44_BASE_PATH + i);
@@ -798,7 +798,7 @@ async function selectDerivationPath(network: string) {
   const pathList: DerivedAddress[] = await getPathsAndAddresses(network, derivation);
   const choiceList = createChoicesFromAddress(pathList);
   const selectedAddress = await prompts.selectAddress(choiceList);
-  const selectedDerivedAddress = pathList.find((item) => item.ethAddress == selectedAddress.address);
+  const selectedDerivedAddress = pathList.find((item) => item.ethAddress === selectedAddress.address);
   const selectedDerivationPath = selectedDerivedAddress?.derivationPath;
   return selectedDerivationPath;
 }

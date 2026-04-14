@@ -86,17 +86,17 @@ export function getContext(
  */
 export function getNetworkConfig(network: string | undefined): NetworkConfig {
   let networkConfig;
-  if (network == "flare" || network === undefined) {
+  if (network === "flare" || network === undefined) {
     networkConfig = flare;
-  } else if (network == "songbird") {
+  } else if (network === "songbird") {
     networkConfig = songbird;
-  } else if (network == "costwo") {
+  } else if (network === "costwo") {
     networkConfig = costwo;
-  } else if (network == "coston") {
+  } else if (network === "coston") {
     networkConfig = coston;
-  } else if (network == "localflare") {
+  } else if (network === "localflare") {
     networkConfig = localflare;
-  } else if (network == "local") {
+  } else if (network === "local") {
     networkConfig = local;
   } else throw Error("Invalid network");
   return networkConfig;
@@ -141,7 +141,7 @@ export function context(
     publicKey = "04" + Buffer.concat(publicKeyPair).toString("hex"); // standardize
   }
   if (privkHex) {
-    const [pubX, pubY] = privateKeyToPublicKey(Buffer.from(privkHex, "hex"));
+    const [pubX, pubY] = privateKeyToPublicKey(Buffer.from(privkHex, "hex")) as [Buffer, Buffer];
     if (publicKey) {
       if (!publicKeyPair) {
         throw Error("public key pair is not defined");

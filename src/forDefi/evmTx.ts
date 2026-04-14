@@ -87,9 +87,9 @@ export async function createOptOutTransaction(ctx: Context, fileId: string, nonc
     flareContractRegistryABI
   );
   const distributionToDelegatorsAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName("DistributionToDelegators")
+    .getContractAddressByName!("DistributionToDelegators")
     .call();
-  if (distributionToDelegatorsAddress == ZeroAddress) {
+  if (distributionToDelegatorsAddress === ZeroAddress) {
     throw new Error("Distribution contract address not found");
   }
   const txNonce = nonce ?? String(await ctx.web3.eth.getTransactionCount(ctx.cAddressHex));
@@ -98,10 +98,10 @@ export async function createOptOutTransaction(ctx: Context, fileId: string, nonc
     distributionToDelegatorsAddress,
     distributionToDelegatorsABI
   );
-  const fnToEncode = distributionWeb3Contract.methods.optOutOfAirdrop();
+  const fnToEncode = distributionWeb3Contract.methods.optOutOfAirdrop!();
 
   // check if address is already opt out candidate
-  const isOptOutCandidate = await distributionWeb3Contract.methods.optOutCandidate(ctx.cAddressHex).call();
+  const isOptOutCandidate = await distributionWeb3Contract.methods.optOutCandidate!(ctx.cAddressHex).call();
   if (isOptOutCandidate) {
     throw new Error("Already an opt out candidate");
   }
@@ -110,7 +110,7 @@ export async function createOptOutTransaction(ctx: Context, fileId: string, nonc
     nonce: txNonce,
     gasPrice: 200_000_000_000,
     gasLimit: 4_000_000,
-    to: distributionWeb3Contract.options.address,
+    to: distributionWeb3Contract.options.address!,
     data: fnToEncode.encodeABI(),
     chainId: ctx.config.networkID,
   };
@@ -166,9 +166,9 @@ export async function createClaimTransaction(
     flareContractRegistryABI
   );
   const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName("ValidatorRewardManager")
+    .getContractAddressByName!("ValidatorRewardManager")
     .call();
-  if (validatorRewardManagerAddress == ZeroAddress) {
+  if (validatorRewardManagerAddress === ZeroAddress) {
     throw new Error("ValidatorRewardManager contract address not found");
   }
   const txNonce = nonce ?? Number(await web3.eth.getTransactionCount(owner));
@@ -179,12 +179,12 @@ export async function createClaimTransaction(
   );
 
   // check if unclaimed rewards are available
-  const rewardsState = await validatorRewardManagerContract.methods.getStateOfRewards(owner).call();
+  const rewardsState = await validatorRewardManagerContract.methods.getStateOfRewards!(owner).call();
   if (!rewardsState) {
     throw new Error("Invalid rewards response");
   }
-  const totalRewards = BigInt(rewardsState[0]);
-  const claimedRewards = BigInt(rewardsState[1]);
+  const totalRewards = BigInt(rewardsState[0]!);
+  const claimedRewards = BigInt(rewardsState[1]!);
   const unclaimedRewardsWei: bigint = totalRewards - claimedRewards;
   const amountWei = amount ? BigInt(amount) * BigInt(10 ** 9) : unclaimedRewardsWei; // amount is already in nanoFLR
   const unclaimedRewards = ethers.formatUnits(unclaimedRewardsWei, 18); // convert to FLR
@@ -196,7 +196,7 @@ export async function createClaimTransaction(
     );
   }
 
-  const fnToEncode = validatorRewardManagerContract.methods.claim(owner, recipientAddress, amountWei, wrap);
+  const fnToEncode = validatorRewardManagerContract.methods.claim!(owner, recipientAddress, amountWei, wrap);
   // const lastBlock = await web3.eth.getBlockNumber() - 3n;
   // let gasPrice: bigint;
   // try {
@@ -218,7 +218,7 @@ export async function createClaimTransaction(
     nonce: txNonce,
     gasPrice: 200_000_000_000,
     gasLimit: 4_000_000,
-    to: validatorRewardManagerContract.options.address,
+    to: validatorRewardManagerContract.options.address!,
     data: fnToEncode.encodeABI(),
     chainId: ctx.config.networkID,
   };
@@ -272,7 +272,7 @@ export async function sendSignedEvmTransaction(ctx: Context, fileId: string): Pr
   const signature = signedTxJson.signature;
 
   // create raw signed tx
-  const ethersTx = Transaction.from(unsignedTxJson.rawTx);
+  const ethersTx = Transaction.from(unsignedTxJson.rawTx as TransactionLike);
   ethersTx.signature = prefix0x(signature);
   const serializedSigned = ethersTx.serialized;
 
@@ -384,24 +384,24 @@ export async function getStateOfRewards(
     flareContractRegistryABI
   );
   const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName("ValidatorRewardManager")
+    .getContractAddressByName!("ValidatorRewardManager")
     .call();
   const validatorRewardManagerContract = getWeb3Contract(
     web3,
     validatorRewardManagerAddress,
     validatorRewardManagerABI
   );
-  if (validatorRewardManagerAddress == ZeroAddress) {
+  if (validatorRewardManagerAddress === ZeroAddress) {
     throw new Error("ValidatorRewardManager contract address not found");
   }
 
   // check if unclaimed rewards are available
-  const rewardsState = await validatorRewardManagerContract.methods.getStateOfRewards(owner).call();
+  const rewardsState = await validatorRewardManagerContract.methods.getStateOfRewards!(owner).call();
   if (!rewardsState) {
     throw new Error("Invalid rewards response");
   }
-  const totalRewardsWei = BigInt(rewardsState[0]);
-  const claimedRewardsWei = BigInt(rewardsState[1]);
+  const totalRewardsWei = BigInt(rewardsState[0]!);
+  const claimedRewardsWei = BigInt(rewardsState[1]!);
   const unclaimedRewardsWei: bigint = totalRewardsWei - claimedRewardsWei;
   const unclaimedRewards = ethers.formatUnits(unclaimedRewardsWei, 18); // convert to FLR
   const totalRewards = ethers.formatUnits(totalRewardsWei, 18);
@@ -434,9 +434,9 @@ export async function createSetClaimExecutorsTransaction(
     flareContractRegistryABI
   );
   const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName("ClaimSetupManager")
+    .getContractAddressByName!("ClaimSetupManager")
     .call();
-  if (claimSetupManagerAddress == ZeroAddress) {
+  if (claimSetupManagerAddress === ZeroAddress) {
     throw new Error("ClaimSetupManager contract address not found");
   }
   const txNonce = nonce ?? Number(await web3.eth.getTransactionCount(ctx.cAddressHex));
@@ -449,19 +449,19 @@ export async function createSetClaimExecutorsTransaction(
   let totalFee = 0n;
   for (const executor of executors) {
     const executorInfo: [boolean, bigint] = await claimSetupManagerWeb3Contract.methods
-      .getExecutorInfo(web3.utils.toChecksumAddress(executor))
+      .getExecutorInfo!(web3.utils.toChecksumAddress(executor))
       .call();
     if (!executorInfo[0]) {
       throw new Error(`Executor ${executor} is not registered`);
     }
     totalFee += executorInfo[1];
   }
-  const fnToEncode = claimSetupManagerWeb3Contract.methods.setClaimExecutors(executors);
+  const fnToEncode = claimSetupManagerWeb3Contract.methods.setClaimExecutors!(executors);
   const rawTx: TransactionLike = {
     nonce: txNonce,
     gasPrice: 200_000_000_000,
     gasLimit: 4_000_000,
-    to: claimSetupManagerWeb3Contract.options.address,
+    to: claimSetupManagerWeb3Contract.options.address!,
     data: fnToEncode.encodeABI(),
     chainId: ctx.config.networkID,
     value: totalFee.toString(),
@@ -509,9 +509,9 @@ export async function createSetAllowedClaimRecipientsTransaction(
     flareContractRegistryABI
   );
   const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName("ClaimSetupManager")
+    .getContractAddressByName!("ClaimSetupManager")
     .call();
-  if (claimSetupManagerAddress == ZeroAddress) {
+  if (claimSetupManagerAddress === ZeroAddress) {
     throw new Error("ClaimSetupManager contract address not found");
   }
   const txNonce = nonce ?? Number(await web3.eth.getTransactionCount(ctx.cAddressHex));
@@ -520,12 +520,12 @@ export async function createSetAllowedClaimRecipientsTransaction(
   // filter out empty strings (if removing recipients)
   recipients = recipients.filter((recipient) => recipient.trim() !== "");
 
-  const fnToEncode = claimSetupManagerWeb3Contract.methods.setAllowedClaimRecipients(recipients);
+  const fnToEncode = claimSetupManagerWeb3Contract.methods.setAllowedClaimRecipients!(recipients);
   const rawTx: TransactionLike = {
     nonce: txNonce,
     gasPrice: 200_000_000_000,
     gasLimit: 4_000_000,
-    to: claimSetupManagerWeb3Contract.options.address,
+    to: claimSetupManagerWeb3Contract.options.address!,
     data: fnToEncode.encodeABI(),
     chainId: ctx.config.networkID,
   };

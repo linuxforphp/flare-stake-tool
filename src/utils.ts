@@ -78,8 +78,8 @@ export function weiToGwei(weiValue: number | bigint | BN): BN {
 }
 
 export function weiToGweiCeil(weiValue: number | bigint | BN): BN {
-  let weiValueBN = weiValue instanceof BN ? weiValue : new BN(weiValue.toString());
-  let dm = weiValueBN.divmod(new BN(1e9));
+  const weiValueBN = weiValue instanceof BN ? weiValue : new BN(weiValue.toString());
+  const dm = weiValueBN.divmod(new BN(1e9));
   return dm.mod.isZero() ? dm.div : dm.div.iaddn(1);
 }
 
@@ -95,16 +95,16 @@ export function dateToDateTimeString(date: Date): string {
   return date.toLocaleString();
 }
 
-export function adjustStartTime(startTime: any): number {
+export function adjustStartTime(startTime: string | number | undefined): number {
   return Number(startTime) || Math.round(Date.now() / 1000);
 }
 
-export function adjustStartTimeForDefi(startTime: any): number {
+export function adjustStartTimeForDefi(startTime: string | number | undefined): number {
   return Number(startTime) || 1;
 }
 
 export async function waitWhile(condition: () => Promise<boolean>, timeoutMs: number, delayMs: number) {
-  let start = Date.now();
+  const start = Date.now();
   while (Date.now() - start < timeoutMs) {
     if (await condition()) {
       break;
@@ -118,9 +118,9 @@ export async function sleep(ms: number): Promise<void> {
 }
 
 export function saveToFile(text: string, filename: string): void {
-  let file = new Blob([text], { type: "text/plain" });
-  let a = document.createElement("a");
-  let url = URL.createObjectURL(file);
+  const file = new Blob([text], { type: "text/plain" });
+  const a = document.createElement("a");
+  const url = URL.createObjectURL(file);
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -132,7 +132,7 @@ export function saveToFile(text: string, filename: string): void {
 }
 
 export async function copyToClipboard(text: string): Promise<void> {
-  let result = await navigator.permissions.query({
+  const result = await navigator.permissions.query({
     name: "clipboard-write" as PermissionName,
   });
   if (result.state === "granted" || result.state === "prompt") {
@@ -166,7 +166,7 @@ export function privateKeyToPublicKey(privateKey: Buffer): Buffer[] {
 
 export function decodePublicKey(publicKey: string): [Buffer, Buffer] {
   publicKey = unPrefix0x(publicKey);
-  if (publicKey.length == 128) {
+  if (publicKey.length === 128) {
     publicKey = "04" + publicKey;
   }
   const keyPair = ec.keyFromPublic(publicKey, "hex").getPublic();
@@ -225,9 +225,9 @@ export function recoverMessageSigner(message: Buffer, signature: string) {
 }
 
 export function recoverTransactionSigner(message: Buffer, signature: string) {
-  let split = ethutil.fromRpcSig(signature);
-  let publicKey = ethutil.ecrecover(message, split.v, split.r, split.s);
-  let signer = ethutil.pubToAddress(publicKey).toString("hex");
+  const split = ethutil.fromRpcSig(signature);
+  const publicKey = ethutil.ecrecover(message, split.v, split.r, split.s);
+  const signer = ethutil.pubToAddress(publicKey).toString("hex");
   return signer;
 }
 
@@ -273,7 +273,7 @@ export function decimalToInteger(dec: string, offset: number): string {
   let ret = dec;
   if (ret.includes(".")) {
     const split = ret.split(".");
-    ret = split[0] + split[1].slice(0, offset).padEnd(offset, "0");
+    ret = split[0]! + split[1]!.slice(0, offset).padEnd(offset, "0");
   } else {
     ret = ret + "0".repeat(offset);
   }
@@ -320,7 +320,7 @@ export function saveUnsignedTxJson(unsignedTxJson: UnsignedTxJson, id: string, d
   if (fs.existsSync(fname)) {
     throw new Error(`unsignedTx file ${fname} already exists`);
   }
-  const forDefiHash = Buffer.from(unsignedTxJson.signatureRequests[0].message, "hex").toString("base64");
+  const forDefiHash = Buffer.from(unsignedTxJson.signatureRequests[0]!.message, "hex").toString("base64");
   const unsignedTxJsonForDefi: UnsignedTxJson = {
     ...unsignedTxJson,
     forDefiHash: forDefiHash,
@@ -439,7 +439,7 @@ export async function waitFinalize<T>(ctx: Context, prms: Promise<T>): Promise<T
   }
   const txcount1 = await ctx.web3.eth.getTransactionCount(ctx.cAddressHex);
   const resp = await prms;
-  while ((await ctx.web3.eth.getTransactionCount(ctx.cAddressHex)) == txcount1) {
+  while ((await ctx.web3.eth.getTransactionCount(ctx.cAddressHex)) === txcount1) {
     await sleepms(1000);
   }
   return resp;

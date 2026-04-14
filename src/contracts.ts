@@ -25,11 +25,11 @@ async function getContractAddress(network: string, contractName: string): Promis
   const rpcUrl = rpcUrlFromNetworkConfig(network);
   const provider = new ethers.providers.JsonRpcProvider(rpcUrl);
 
-  if (network != "flare" && network != "costwo" && network != "songbird" && network != "coston") {
+  if (network !== "flare" && network !== "costwo" && network !== "songbird" && network !== "coston") {
     throw new Error("Invalid network passed");
   }
   const contract = new ethers.Contract(
-    defaultContractAddresses.FlareContractRegistry[network],
+    defaultContractAddresses.FlareContractRegistry![network],
     flareContractRegistryABI,
     provider
   );
@@ -52,15 +52,16 @@ const fetchValidatorInfo = async (ctx: Context) => {
 };
 
 // fetches the delegation stake (from both current validator) for the current user
-const fetchDelegateStake = async (ctx: Context, validatorFunction: (ctx: Context) => any) => {
+const fetchDelegateStake = async (ctx: Context, validatorFunction: (ctx: Context) => Promise<unknown>) => {
   const validatorsInfo = (await validatorFunction(ctx)) as GetCurrentValidatorsResponseFixed;
   const validatorsData = validatorsInfo.validators;
-  let userStake = [];
+  const userStake = [];
   if (!ctx.pAddressBech32) {
     throw new Error("pAddressBech32 is not set in the context");
   }
   for (let i = 0; i < validatorsData.length; i++) {
     const validatorData = validatorsData[i];
+    if (!validatorData) continue;
     // get validators
     if (
       validatorData.validationRewardOwner &&
@@ -78,17 +79,15 @@ const fetchDelegateStake = async (ctx: Context, validatorFunction: (ctx: Context
     }
 
     // get delegators
-    for (let j = 0; j < (validatorData.delegators && validatorData.delegators?.length); j++) {
-      if (
-        validatorData.delegators[j] &&
-        validatorData.delegators[j].rewardOwner.addresses.includes(ctx.pAddressBech32)
-      ) {
-        const startDate = new Date(parseInt(validatorData.delegators[j].startTime) * 1000);
-        const endDate = new Date(parseInt(validatorData.delegators[j].endTime) * 1000);
+    for (let j = 0; j < (validatorData.delegators?.length ?? 0); j++) {
+      const delegator = validatorData.delegators?.[j];
+      if (delegator && delegator.rewardOwner.addresses.includes(ctx.pAddressBech32)) {
+        const startDate = new Date(parseInt(delegator.startTime) * 1000);
+        const endDate = new Date(parseInt(delegator.endTime) * 1000);
         userStake.push({
           type: "delegator",
           nodeID: validatorData.nodeID,
-          stakeAmount: parseFloat(validatorData.delegators[j].stakeAmount) / 1e9,
+          stakeAmount: parseFloat(delegator.stakeAmount) / 1e9,
           startTime: startDate,
           endTime: endDate,
         });
@@ -102,7 +101,7 @@ const fetchDelegateStake = async (ctx: Context, validatorFunction: (ctx: Context
 const getTotalFromDelegation = (data: DelegationInfo[]) => {
   let total = 0;
   for (let i = 0; i < data.length; i++) {
-    total += data[i].stakeAmount;
+    total += data[i]!.stakeAmount;
   }
   return total;
 };

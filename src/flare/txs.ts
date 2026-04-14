@@ -56,12 +56,12 @@ const TX_WAIT_MS = 15000;
 const TX_CHECK_MS = 1000;
 
 export async function buildExportCTx(account: Account, params: ExportCTxParams): Promise<UnsignedTxData> {
-  let importFeeReservation = await chain.getPTxDefaultFee(account.network);
+  const importFeeReservation = await chain.getPTxDefaultFee(account.network);
   if (!params.exportFee || params.exportFee.isZero()) {
     params.exportFee = await _getExportCTxFee(account, params.amount, importFeeReservation);
   }
-  let unsignedTx = await _getUnsignedExportCTx(account, params.amount, params.exportFee, importFeeReservation);
-  let unsignedTxHex = _unsignedTxToHex(unsignedTx);
+  const unsignedTx = await _getUnsignedExportCTx(account, params.amount, params.exportFee, importFeeReservation);
+  const unsignedTxHex = _unsignedTxToHex(unsignedTx);
   return {
     txDetails: {
       ...params,
@@ -105,9 +105,9 @@ export async function buildImportCTx(account: Account, params: ImportCTxParams):
   if (!params.importFee || params.importFee.isZero()) {
     params.importFee = await _getImportCTxFee(account);
   }
-  let unsignedTx = await _getUnsignedImportCTx(account, params.importFee);
-  let amount = await chain.getPCBalance(account.network, account.pAddress);
-  let unsignedTxHex = _unsignedTxToHex(unsignedTx);
+  const unsignedTx = await _getUnsignedImportCTx(account, params.importFee);
+  const amount = await chain.getPCBalance(account.network, account.pAddress);
+  const unsignedTxHex = _unsignedTxToHex(unsignedTx);
   return {
     txDetails: { ...params, amount, unsignedTxHex } as ImportCTxDetails,
     unsignedTx,
@@ -358,9 +358,9 @@ function _unsignedTxToHex(unsignedTx: UnsignedTx | EVMUnsignedTx): string {
 }
 
 export async function buildEvmTx(account: Account, params: EvmTxParams, evmTx: EvmTx): Promise<UnsignedTxData> {
-  let txData = {
+  const txData = {
     from: account.cAddress,
-    chainId: BigInt(settings.CHAIN_ID[account.network]),
+    chainId: BigInt(settings.CHAIN_ID[account.network]!),
     ...evmTx,
   };
   if (!txData.value) {
@@ -370,21 +370,21 @@ export async function buildEvmTx(account: Account, params: EvmTxParams, evmTx: E
     txData.nonce = await chain.numberOfCTxs(account.network, account.cAddress);
   }
   if (!txData.maxFeePerGas || !txData.maxPriorityFeePerGas) {
-    let feeEstimate = await chain.estimateEIP1559Fee(account.network);
+    const feeEstimate = await chain.estimateEIP1559Fee(account.network);
     txData.maxFeePerGas = feeEstimate[0];
     txData.maxPriorityFeePerGas = feeEstimate[1];
   }
   if (!txData.gasLimit) {
-    let web3 = chain.getWeb3(account.network);
-    let estimatedGasLimit = await web3.eth.estimateGas(txData);
+    const web3 = chain.getWeb3(account.network);
+    const estimatedGasLimit = await web3.eth.estimateGas(txData);
     txData.gasLimit = (estimatedGasLimit * BigInt(10500)) / BigInt(10000);
   }
 
   let unsignedTx: EvmLegacyTx | EvmEIP1559Tx;
   let unsignedTxHex;
-  if (params.txType == 0) {
-    let common = Common.custom({ chainId: txData.chainId });
-    let evmLegacyTx = {
+  if (params.txType === 0) {
+    const common = Common.custom({ chainId: txData.chainId });
+    const evmLegacyTx = {
       from: txData.from,
       to: Uint8Array.from(utils.toBuffer(txData.to)),
       data: Uint8Array.from(utils.toBuffer(txData.data ?? "")),
@@ -396,8 +396,8 @@ export async function buildEvmTx(account: Account, params: EvmTxParams, evmTx: E
     };
     unsignedTx = EvmLegacyTx.fromTxData(evmLegacyTx, { common });
     unsignedTxHex = utils.toHex(RLP.encode(unsignedTx.getMessageToSign()));
-  } else if (params.txType == 2) {
-    let evmEIP1559Tx = {
+  } else if (params.txType === 2) {
+    const evmEIP1559Tx = {
       from: txData.from,
       to: Uint8Array.from(utils.toBuffer(txData.to)),
       data: Uint8Array.from(utils.toBuffer(txData.data ?? "")),
@@ -426,7 +426,7 @@ export async function buildEvmTx(account: Account, params: EvmTxParams, evmTx: E
 }
 
 export async function finalizeAndConvertEvmTx(from: string, txHex: string, txType: number): Promise<string> {
-  let tx = TransactionFactory.fromSerializedData(utils.toBuffer(txHex));
+  const tx = TransactionFactory.fromSerializedData(utils.toBuffer(txHex));
 
   let chainId;
   let accessList;
@@ -443,40 +443,40 @@ export async function finalizeAndConvertEvmTx(from: string, txHex: string, txTyp
     throw new Error("Unsupported EVM transaction type given");
   }
 
-  let network = _getNetworkFromChainId(chainId);
+  const network = _getNetworkFromChainId(chainId);
 
-  let to = utils.toHex(tx.to ? tx.to.toString() : "");
-  let value = tx.value;
-  let data = utils.toHex(tx.data);
-  let nonce = await chain.numberOfCTxs(network, from);
-  let feeEstimate = await chain.estimateEIP1559Fee(network);
-  let maxFeePerGas = feeEstimate[0];
-  let maxPriorityFeePerGas = feeEstimate[1];
-  let web3 = chain.getWeb3(network);
-  let estimatedGasLimit = await web3.eth.estimateGas({
+  const to = utils.toHex(tx.to ? tx.to.toString() : "");
+  const value = tx.value;
+  const data = utils.toHex(tx.data);
+  const nonce = await chain.numberOfCTxs(network, from);
+  const feeEstimate = await chain.estimateEIP1559Fee(network);
+  const maxFeePerGas = feeEstimate[0];
+  const maxPriorityFeePerGas = feeEstimate[1];
+  const web3 = chain.getWeb3(network);
+  const estimatedGasLimit = await web3.eth.estimateGas({
     from,
     to,
     value,
     data,
     nonce,
   });
-  let gasLimit = (estimatedGasLimit * BigInt(10500)) / BigInt(10000);
+  const gasLimit = (estimatedGasLimit * BigInt(10500)) / BigInt(10000);
 
   let unsignedTxHex;
-  if (txType == 0) {
-    let toArray = Uint8Array.from(utils.toBuffer(to));
-    let dataArray = Uint8Array.from(utils.toBuffer(data));
-    let common = Common.custom({ chainId });
-    let gasPrice = maxFeePerGas - maxPriorityFeePerGas;
-    let unsignedTx = EvmLegacyTx.fromTxData(
+  if (txType === 0) {
+    const toArray = Uint8Array.from(utils.toBuffer(to));
+    const dataArray = Uint8Array.from(utils.toBuffer(data));
+    const common = Common.custom({ chainId });
+    const gasPrice = maxFeePerGas - maxPriorityFeePerGas;
+    const unsignedTx = EvmLegacyTx.fromTxData(
       { to: toArray, value, data: dataArray, nonce, gasLimit, gasPrice },
       { common }
     );
     unsignedTxHex = utils.toHex(RLP.encode(unsignedTx.getMessageToSign()));
-  } else if (txType == 2) {
-    let toArray = Uint8Array.from(utils.toBuffer(to));
-    let dataArray = Uint8Array.from(utils.toBuffer(data));
-    let unsignedTx = EvmEIP1559Tx.fromTxData({
+  } else if (txType === 2) {
+    const toArray = Uint8Array.from(utils.toBuffer(to));
+    const dataArray = Uint8Array.from(utils.toBuffer(data));
+    const unsignedTx = EvmEIP1559Tx.fromTxData({
       chainId,
       to: toArray,
       value,
@@ -501,7 +501,7 @@ export async function signAndSubmitTx(
   presubmit?: PreSubmit
 ): Promise<SubmittedTxData> {
   let unsignedTxHash;
-  let unsignedTx = unsignedTxData.unsignedTx;
+  const unsignedTx = unsignedTxData.unsignedTx;
   if (unsignedTx instanceof EvmLegacyTx) {
     unsignedTxHash = utils.toHex(unsignedTx.getHashedMessageToSign());
   } else if (unsignedTx instanceof EvmEIP1559Tx) {
@@ -512,21 +512,21 @@ export async function signAndSubmitTx(
     throw new Error(`Can't issue transaction of type ${typeof unsignedTx}`);
   }
 
-  let signatureResponse = await sign({
+  const signatureResponse = await sign({
     ...unsignedTxData.txDetails,
     unsignedTxHash,
   });
 
   let id = "";
   let submitted = false;
-  let network = unsignedTxData.txDetails.network;
-  let signedTxData = { ...unsignedTxData, signature: "", signedTx: "" };
+  const network = unsignedTxData.txDetails.network;
+  const signedTxData = { ...unsignedTxData, signature: "", signedTx: "" };
   if (signatureResponse.startsWith("id:")) {
     // the transaction was not just signed but also submitted to the network
     id = signatureResponse.slice(3);
     submitted = true;
   } else {
-    let signature = utils.toHex(signatureResponse, false);
+    const signature = utils.toHex(signatureResponse, false);
     signedTxData.signature = signature;
 
     let publicKey = pubk.recoverPublicKeyFromMsg(unsignedTxHash, signature);
@@ -543,15 +543,15 @@ export async function signAndSubmitTx(
 
     let signedTx: Uint8Array;
     if (unsignedTx instanceof EvmLegacyTx || unsignedTx instanceof EvmEIP1559Tx) {
-      let expandedSignature = _expandSignature(signature);
+      const expandedSignature = _expandSignature(signature);
       let tx: EvmLegacyTx | EvmEIP1559Tx;
       if (unsignedTx instanceof EvmLegacyTx) {
         let v = expandedSignature.recoveryParam;
-        if (v == 0 || v == 1) {
+        if (v === 0 || v === 1) {
           v += 27;
         }
-        if (v == 27 || v == 28) {
-          v += 8 + 2 * parseInt(settings.CHAIN_ID[network], 16);
+        if (v === 27 || v === 28) {
+          v += 8 + 2 * parseInt(settings.CHAIN_ID[network]!, 16);
         }
         tx = EvmLegacyTx.fromTxData({
           ...unsignedTx.toJSON(),
@@ -560,7 +560,7 @@ export async function signAndSubmitTx(
           s: BigInt(expandedSignature.s.toString()),
         });
       } else {
-        const txData = unsignedTx.toJSON() as FeeMarketEIP1559TxData;
+        const txData = unsignedTx.toJSON() as unknown as FeeMarketEIP1559TxData;
         delete txData.gasPrice;
         tx = EvmEIP1559Tx.fromTxData({
           ...txData,
@@ -594,7 +594,7 @@ export async function signAndSubmitTx(
       signedTx = unsignedTx.getSignedTx().toBytes();
     }
     signedTxData.signedTx = utils.toHex(signedTx);
-    let txSummary = {
+    const txSummary = {
       network: signedTxData.txDetails.network,
       type: signedTxData.txDetails.type,
       publicKey: signedTxData.txDetails.publicKey,
@@ -606,7 +606,7 @@ export async function signAndSubmitTx(
 
     if (!presubmit || (await presubmit(txSummary))) {
       if (unsignedTx instanceof EvmLegacyTx || unsignedTx instanceof EvmEIP1559Tx) {
-        let web3 = chain.getWeb3(network);
+        const web3 = chain.getWeb3(network);
         id = await _submitEvmTx(web3, signedTxData.signedTx);
       } else {
         if (unsignedTx instanceof EVMUnsignedTx) {
@@ -675,12 +675,12 @@ export async function submitTxHex(txHex: string): Promise<[string, string, boole
 
     // TODO: obtain network name from ...
     const evmapi = new evm.EVMApi(settings.URL["localflare"]);
-    let id = await _submitCTx(evmapi, txHex);
-    let result = await _waitForCTxConfirmation(evmapi, id);
-    let status = result[0];
-    let confirmed = result[1];
+    const id = await _submitCTx(evmapi, txHex);
+    const result = await _waitForCTxConfirmation(evmapi, id);
+    const status = result[0];
+    const confirmed = result[1];
     return [id, status, confirmed];
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.log("Error submitting CTx", e);
   }
   try {
@@ -690,16 +690,16 @@ export async function submitTxHex(txHex: string): Promise<[string, string, boole
     // let avajs = chain.getAvalanche(network)
 
     const pvmapi = new pvm.PVMApi(settings.URL["localflare"]);
-    let id = await _submitPTx(pvmapi, txHex);
-    let result = await _waitForPTxConfirmation(pvmapi, id);
-    let status = result[0];
-    let confirmed = result[1];
+    const id = await _submitPTx(pvmapi, txHex);
+    const result = await _waitForPTxConfirmation(pvmapi, id);
+    const status = result[0];
+    const confirmed = result[1];
     return [id, status, confirmed];
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.log("Error submitting PTx", e);
   }
   try {
-    let evmTx = TransactionFactory.fromSerializedData(utils.toBuffer(txHex));
+    const evmTx = TransactionFactory.fromSerializedData(utils.toBuffer(txHex));
     let chainId;
     if (evmTx instanceof EvmLegacyTx) {
       if (!evmTx.v) {
@@ -709,14 +709,14 @@ export async function submitTxHex(txHex: string): Promise<[string, string, boole
     } else {
       chainId = evmTx.chainId;
     }
-    let network = _getNetworkFromChainId(chainId);
-    let web3 = chain.getWeb3(network);
-    let id = await _submitEvmTx(web3, txHex);
-    let result = await _waitForEvmTxConfirmation(web3, id);
-    let status = result[0];
-    let confirmed = result[1];
+    const network = _getNetworkFromChainId(chainId);
+    const web3 = chain.getWeb3(network);
+    const id = await _submitEvmTx(web3, txHex);
+    const result = await _waitForEvmTxConfirmation(web3, id);
+    const status = result[0];
+    const confirmed = result[1];
     return [id, status, confirmed];
-  } catch (e: any) {
+  } catch (e: unknown) {
     console.log("Error submitting EVM Tx", e);
   }
 
@@ -743,7 +743,7 @@ async function _submitEvmTx(web3: Web3, txHex: string): Promise<string> {
 
 async function _waitForCTxConfirmation(evmapi: evm.EVMApi, txId: string): Promise<[string, boolean]> {
   let status = "Unkown";
-  let start = Date.now();
+  const start = Date.now();
   while (Date.now() - start < TX_WAIT_MS) {
     status = (await evmapi.getAtomicTxStatus(txId)).status;
     await utils.sleep(TX_CHECK_MS); // wait regardless of status for added safety
@@ -751,13 +751,13 @@ async function _waitForCTxConfirmation(evmapi: evm.EVMApi, txId: string): Promis
       break;
     }
   }
-  let confirmed = status === "Accepted";
+  const confirmed = status === "Accepted";
   return [status, confirmed];
 }
 
 async function _waitForPTxConfirmation(pvmapi: pvm.PVMApi, txId: string): Promise<[string, boolean]> {
   let status = "Unkown";
-  let start = Date.now();
+  const start = Date.now();
   while (Date.now() - start < TX_WAIT_MS) {
     status = (await pvmapi.getTxStatus({ txID: txId })).status;
     await utils.sleep(TX_CHECK_MS); // wait regardless of status for added safety
@@ -765,34 +765,34 @@ async function _waitForPTxConfirmation(pvmapi: pvm.PVMApi, txId: string): Promis
       break;
     }
   }
-  let confirmed = status === "Committed";
+  const confirmed = status === "Committed";
   return [status, confirmed];
 }
 
 async function _waitForEvmTxConfirmation(web3: Web3, txId: string): Promise<[string, boolean]> {
   let status = "Unkown";
-  let start = Date.now();
+  const start = Date.now();
   while (Date.now() - start < TX_WAIT_MS) {
     let receipt;
     try {
       receipt = await web3.eth.getTransactionReceipt(txId);
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.log("Error getting transaction receipt", e);
     }
     if (receipt) {
-      status = receipt.status == BigInt(1) ? "Confirmed" : "Failed";
+      status = receipt.status === BigInt(1) ? "Confirmed" : "Failed";
       break;
     }
     await utils.sleep(TX_CHECK_MS);
   }
-  let confirmed = status === "Confirmed";
+  const confirmed = status === "Confirmed";
   return [status, confirmed];
 }
 
 function _getNetworkFromChainId(chainId: number | bigint): string {
   let network = "";
-  let chainIdHex = utils.toHex(chainId.toString(16));
-  for (let entry of Object.entries(settings.CHAIN_ID)) {
+  const chainIdHex = utils.toHex(chainId.toString(16));
+  for (const entry of Object.entries(settings.CHAIN_ID)) {
     if (entry[1] === chainIdHex) {
       network = entry[0];
       break;
@@ -814,7 +814,7 @@ export async function getStakeTransaction(
   | pvmSerial.AddPermissionlessValidatorTx
 > {
   const pvmapi = new pvm.PVMApi(settings.URL[network]);
-  let tx = await pvmapi.getTx({ txID: txId });
+  const tx = await pvmapi.getTx({ txID: txId });
   switch (tx.unsignedTx._type) {
     case TypeSymbols.AddDelegatorTx:
       return tx.unsignedTx as pvmSerial.AddDelegatorTx;
