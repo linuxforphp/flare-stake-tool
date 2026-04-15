@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [[v4.3.0](https://github.com/flare-foundation/flare-stake-tool/releases/tag/v4.3.0)] - 2026-04-14
+## [[v4.3.0](https://github.com/flare-foundation/flare-stake-tool/releases/tag/v4.3.0)] - 2026-04-15
 
 ### Changed
 
@@ -13,19 +13,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Migrated to shared Flare ESLint config (`@flarenetwork/eslint-config-flare`).
 * Migrated to shared Flare Prettier config (`@flarenetwork/prettier-config-flare`).
 * Updated `tsconfig.json` to target ES2024 with stricter type-checking options (`noUncheckedIndexedAccess`, `exactOptionalPropertyTypes`, `isolatedModules`).
+* Split tsconfig into base (type-checking) and `tsconfig.build.json` (compilation) with `rootDir: "src"`.
 * Raised minimum supported Node.js version to 24 (`engines.node >= 24`).
 * Replaced `==`/`!=` with `===`/`!==` across the codebase.
 * Moved `typescript` and `rimraf` from dependencies to devDependencies.
+* Moved pnpm settings to `pnpm-workspace.yaml` (`engineStrict`, `nodeOptions`, `minimumReleaseAge`).
 
 ### Added
 
+* Unit test infrastructure with mocha, chai, nyc, and tsx (202 tests, 92% coverage on tested files).
 * `CONTRIBUTING.md` with AI disclosure policy.
 * `SECURITY.md` with vulnerability reporting and review scope.
 * `CODEOWNERS` file.
 * README header with Flare logo and navigation links.
-* `.nvmrc` and `.npmrc` configuration files.
-* CI stages for linting, format checking, and building on every push.
-* `lint:check`, `lint:fix`, `format:check`, `format:fix` scripts.
+* `.nvmrc` and `pnpm-workspace.yaml` configuration files.
+* CI stages for linting, format checking, testing (with coverage), and building on every push.
+* `test`, `test:coverage`, `lint:check`, `lint:fix`, `format:check`, `format:fix` scripts.
 
 ## [[v4.2.2](https://github.com/flare-foundation/flare-stake-tool/releases/tag/v4.2.2)] - 2025-12-03
 
