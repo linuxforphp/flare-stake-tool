@@ -1,14 +1,14 @@
 {
   "compilerOptions": {
     // File Layout
-    "rootDir": "./",
+    "rootDir": "src",
     "outDir": "dist",
 
     // Environment Settings
     "target": "ES2024",
     "module": "CommonJS",
     "lib": ["ES2024", "DOM"],
-    "types": ["node"],
+    "types": ["node", "mocha"],
 
     // Other Outputs
     "sourceMap": true,
@@ -25,5 +25,5 @@
     "skipLibCheck": true,
     "preserveSymlinks": true
   },
-  "exclude": ["node_modules", "scripts", "test", "dist"]
+  "include": ["src", "test"]
 }

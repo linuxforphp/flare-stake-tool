@@ -86,9 +86,8 @@ export async function createOptOutTransaction(ctx: Context, fileId: string, nonc
     flareContractRegistryAddress,
     flareContractRegistryABI
   );
-  const distributionToDelegatorsAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName!("DistributionToDelegators")
-    .call();
+  const distributionToDelegatorsAddress: string =
+    await flareContractRegistryWeb3Contract.methods.getContractAddressByName!("DistributionToDelegators").call();
   if (distributionToDelegatorsAddress === ZeroAddress) {
     throw new Error("Distribution contract address not found");
   }
@@ -165,9 +164,8 @@ export async function createClaimTransaction(
     flareContractRegistryAddress,
     flareContractRegistryABI
   );
-  const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName!("ValidatorRewardManager")
-    .call();
+  const validatorRewardManagerAddress: string =
+    await flareContractRegistryWeb3Contract.methods.getContractAddressByName!("ValidatorRewardManager").call();
   if (validatorRewardManagerAddress === ZeroAddress) {
     throw new Error("ValidatorRewardManager contract address not found");
   }
@@ -383,9 +381,8 @@ export async function getStateOfRewards(
     flareContractRegistryAddress,
     flareContractRegistryABI
   );
-  const validatorRewardManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName!("ValidatorRewardManager")
-    .call();
+  const validatorRewardManagerAddress: string =
+    await flareContractRegistryWeb3Contract.methods.getContractAddressByName!("ValidatorRewardManager").call();
   const validatorRewardManagerContract = getWeb3Contract(
     web3,
     validatorRewardManagerAddress,
@@ -433,9 +430,8 @@ export async function createSetClaimExecutorsTransaction(
     flareContractRegistryAddress,
     flareContractRegistryABI
   );
-  const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName!("ClaimSetupManager")
-    .call();
+  const claimSetupManagerAddress: string =
+    await flareContractRegistryWeb3Contract.methods.getContractAddressByName!("ClaimSetupManager").call();
   if (claimSetupManagerAddress === ZeroAddress) {
     throw new Error("ClaimSetupManager contract address not found");
   }
@@ -448,9 +444,9 @@ export async function createSetClaimExecutorsTransaction(
   // check if executors are registered (and addresses are valid) and sum their fees
   let totalFee = 0n;
   for (const executor of executors) {
-    const executorInfo: [boolean, bigint] = await claimSetupManagerWeb3Contract.methods
-      .getExecutorInfo!(web3.utils.toChecksumAddress(executor))
-      .call();
+    const executorInfo: [boolean, bigint] = await claimSetupManagerWeb3Contract.methods.getExecutorInfo!(
+      web3.utils.toChecksumAddress(executor)
+    ).call();
     if (!executorInfo[0]) {
       throw new Error(`Executor ${executor} is not registered`);
     }
@@ -508,9 +504,8 @@ export async function createSetAllowedClaimRecipientsTransaction(
     flareContractRegistryAddress,
     flareContractRegistryABI
   );
-  const claimSetupManagerAddress: string = await flareContractRegistryWeb3Contract.methods
-    .getContractAddressByName!("ClaimSetupManager")
-    .call();
+  const claimSetupManagerAddress: string =
+    await flareContractRegistryWeb3Contract.methods.getContractAddressByName!("ClaimSetupManager").call();
   if (claimSetupManagerAddress === ZeroAddress) {
     throw new Error("ClaimSetupManager contract address not found");
   }

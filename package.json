@@ -7,11 +7,13 @@
   },
   "scripts": {
     "tsc": "tsc",
-    "build": "rimraf dist/ && tsc -b",
-    "lint:check": "eslint \"src/**/*.ts\"",
-    "lint:fix": "eslint \"src/**/*.ts\" --fix",
-    "format:check": "prettier --check \"src/**/*.ts\" \"eslint.config.mjs\"",
-    "format:fix": "prettier --write \"src/**/*.ts\" \"eslint.config.mjs\"",
+    "build": "rimraf dist/ && tsc -p tsconfig.build.json",
+    "test": "mocha",
+    "test:coverage": "nyc mocha",
+    "lint:check": "eslint \"{src,test}/**/*.ts\"",
+    "lint:fix": "eslint \"{src,test}/**/*.ts\" --fix",
+    "format:check": "prettier --check \"{src,test}/**/*.ts\" \"eslint.config.mjs\"",
+    "format:fix": "prettier --write \"{src,test}/**/*.ts\" \"eslint.config.mjs\"",
     "interactive": "bin/flare-stake-tool interactive"
   },
   "repository": {
@@ -70,15 +72,22 @@
     "@eslint/js": "^9.26.0",
     "@flarenetwork/eslint-config-flare": "^0.0.2",
     "@flarenetwork/prettier-config-flare": "^0.0.3",
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/chai": "^5.2.3",
     "@types/clear": "^0.1.2",
     "@types/elliptic": "^6.4.15",
     "@types/figlet": "^1.5.6",
     "@types/inquirer": "9.0.3",
+    "@types/mocha": "^10.0.10",
+    "chai": "^6.2.2",
     "eslint": "^9.26.0",
     "eslint-config-prettier": "^10.1.8",
+    "mocha": "^11.7.5",
+    "nyc": "^18.0.0",
     "prettier": "^3.8.2",
     "prettier-plugin-solidity": "^2.3.1",
     "rimraf": "^5.0.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.32.0"
   },
@@ -94,7 +103,8 @@
       "protobufjs",
       "secp256k1",
       "tiny-secp256k1",
-      "usb"
+      "usb",
+      "esbuild"
     ]
   },
   "engines": {

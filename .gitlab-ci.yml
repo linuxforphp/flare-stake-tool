@@ -33,15 +33,16 @@ variables:
     - corepack enable pnpm
     - pnpm install --frozen-lockfile
     - pnpm build
-    - if [ ! -d dist ] || [ ! -f dist/src/run.js ]; then echo "Dist folder or dist/src/run.js missing"; exit 1; fi;
+    - if [ ! -d dist ] || [ ! -f dist/run.js ]; then echo "Dist folder or dist/run.js missing"; exit 1; fi;
     - npm pack
     - tar -xzf flarenetwork-flare-stake-tool-*.tgz
-    - if [ ! -d package/dist ] || [ ! -f package/dist/src/run.js ]; then echo "Dist folder or dist/src/run.js missing in tarball"; exit 1; fi;
+    - if [ ! -d package/dist ] || [ ! -f package/dist/run.js ]; then echo "Dist folder or dist/run.js missing in tarball"; exit 1; fi;
     - if [ $result -eq 1 ]; then npm publish; else npm publish --tag beta; fi;
 
 stages:
   - check
   - build
+  - test
   - sbom
   - publish
 
@@ -63,6 +64,24 @@ build:
     - pnpm install --frozen-lockfile
   script:
     - pnpm build
+
+test:
+  stage: test
+  image: node:24
+  before_script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm test:coverage
+  coverage: '/All files[^|]*\|[^|]*\s+([\d\.]+)/'
+  artifacts:
+    when: always
+    paths:
+      - coverage/
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
 
 check-tag:
   stage: publish
