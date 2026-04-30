@@ -5,7 +5,7 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [[v4.3.0](https://github.com/flare-foundation/flare-stake-tool/releases/tag/v4.3.0)] - 2026-04-15
+## [[v4.3.0](https://github.com/flare-foundation/flare-stake-tool/releases/tag/v4.3.0)] - 2026-04-30
 
 ### Changed
 
@@ -24,9 +24,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 * Unit test infrastructure with mocha, chai, nyc, and tsx.
+* Property-based tests for utility functions using `fast-check` (round-trip invariants for hex prefixes, decimal/integer conversion, public key compression, P-chain address derivation).
 * Integration test infrastructure with docker-compose against go-flare v1.13.0, covering CLI smoke checks, read-only commands, full signing lifecycle, and the public-key sign+send flow.
 * Restored test staker keys under `local/` for local network bootstrap.
 * `test:integration` script and `.mocharc.integration.yml`.
+* `AGENTS.md` with project-specific instructions for AI coding agents (signing paths, unit conventions, pinned dependencies, gotchas), and a `CLAUDE.md` pointer for Claude Code users.
+* `docs/COMMANDS.md` — behavioral specification for every CLI command.
 * `CONTRIBUTING.md` with AI disclosure policy.
 * `SECURITY.md` with vulnerability reporting and review scope.
 * `CODEOWNERS` file.

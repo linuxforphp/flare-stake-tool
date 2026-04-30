@@ -33,6 +33,13 @@ Any contribution to the project is expected to contain code that is formatted,
 linted and that the existing tests still pass. Adding unit tests for new code is
 also welcome.
 
+> [!TIP]
+> If you (or an AI agent) are about to make a non-trivial change, read
+> [`AGENTS.md`](AGENTS.md) first. It documents project-specific conventions,
+> the three signing paths, unit handling, pinned dependencies, and common
+> gotchas. The behavioral spec for each command is in
+> [`docs/COMMANDS.md`](docs/COMMANDS.md).
+
 ## Dev environment
 
 - [Node.js](https://nodejs.org/) >= 24.0.0
