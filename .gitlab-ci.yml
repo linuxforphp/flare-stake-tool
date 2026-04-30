@@ -2,10 +2,9 @@ include:
   - component: $CI_SERVER_FQDN/flarenetwork/infra-public/ci-components/dependency-track@~latest
 
 # Pipeline strategy:
-# * MRs → run lint/build/test, plus integration-test if relevant files changed
-# * Default-branch push → run everything
-# * Feature-branch push (no MR) → run lint/build/test (no integration)
+# * MRs and branch pushes → lint/format/build/test
 # * Tag push → publish jobs only
+# Integration tests are run locally only (see CONTRIBUTING.md).
 # The "open MRs && push" case is excluded to avoid duplicate (branch + MR) pipelines.
 workflow:
   rules:
@@ -115,35 +114,10 @@ test:
         coverage_format: cobertura
         path: coverage/cobertura-coverage.xml
 
-integration-test:
-  stage: test
-  image: node:24
-  services:
-    - name: docker:27-dind
-      alias: docker
-  variables:
-    DOCKER_HOST: tcp://docker:2375
-    DOCKER_TLS_CERTDIR: ""
-  before_script:
-    - apt-get update && apt-get install -y --no-install-recommends docker.io docker-compose
-    - corepack enable pnpm
-    - pnpm install --frozen-lockfile
-  script:
-    - pnpm build
-    - pnpm test:integration
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      changes:
-        - src/**/*
-        - test/integration/**/*
-        - bin/**/*
-        - docker-compose.yml
-        - package.json
-        - pnpm-lock.yaml
-        - tsconfig*.json
-    - if: $CI_COMMIT_BRANCH == "main"
-  interruptible: true
-  timeout: 15 minutes
+# Integration tests are not run in CI. They require Docker (docker-compose
+# spinning up 5 validator containers) and local volume mounts that don't
+# work cleanly under GitLab's docker-in-docker shared runners. Run them
+# locally with `pnpm test:integration`. See CONTRIBUTING.md.
 
 check-tag:
   stage: publish

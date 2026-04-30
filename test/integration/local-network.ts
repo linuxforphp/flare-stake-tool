@@ -2,7 +2,12 @@ import { spawnSync } from "child_process";
 import path from "path";
 
 const REPO_ROOT = path.resolve(__dirname, "..", "..");
-const RPC_URL = "http://localhost:9650";
+// In docker-in-docker (e.g. GitLab CI), the validator containers are not
+// reachable on localhost — they're on the DinD service host. Override these
+// via env to point at the DinD alias (e.g. http://docker:9650).
+const RPC_HOST = process.env["LOCAL_RPC_HOST"] ?? "localhost";
+const RPC_URL = `http://${RPC_HOST}:9650`;
+const VALIDATOR2_RPC = `http://${RPC_HOST}:5002`;
 const READY_TIMEOUT_MS = 120_000;
 const POLL_INTERVAL_MS = 2_000;
 
@@ -70,7 +75,7 @@ export function stopLocalNetwork(): void {
 }
 
 export const LOCAL_RPC_URL = RPC_URL;
-export const VALIDATOR2_RPC_URL = "http://localhost:5002";
+export const VALIDATOR2_RPC_URL = VALIDATOR2_RPC;
 
 export interface NodeInfo {
   nodeID: string;

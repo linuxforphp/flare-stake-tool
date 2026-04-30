@@ -109,6 +109,13 @@ and exercise the CLI against real validators. They require Docker.
 pnpm test:integration
 ```
 
+> [!NOTE]
+> Integration tests are run locally only, not in CI. GitLab's shared
+> runners use docker-in-docker, where docker-compose volume mounts
+> (`./local:/app/...`) don't work because the docker daemon doesn't see
+> the runner's filesystem. Run them on your machine before opening an
+> MR for any change touching signing or RPC logic.
+
 ## Release process
 
 Releases are published to npm via GitLab CI when a semver git tag (e.g.

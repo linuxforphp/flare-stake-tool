@@ -41,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `CODEOWNERS` file.
 * README header with Flare logo and navigation links.
 * `.nvmrc` and `pnpm-workspace.yaml` configuration files.
-* CI stages for linting, format checking, testing (with coverage), and building, plus a docker-in-docker integration-test job. `workflow:rules` and a reusable job-rules anchor ensure all jobs run on MRs and branch pushes (without duplicate pipelines), while integration-test is gated to MRs (with a `changes` filter) and the default branch.
+* CI stages for linting, format checking, testing (with coverage), and building. `workflow:rules` and a reusable job-rules anchor ensure all jobs run on MRs and branch pushes (without duplicate pipelines). Integration tests run locally only — DinD shared runners can't cleanly handle the docker-compose volume mounts (see CONTRIBUTING.md).
 * `test`, `test:coverage`, `lint:check`, `lint:fix`, `format:check`, `format:fix` scripts.
 
 ### Removed
