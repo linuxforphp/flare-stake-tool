@@ -619,10 +619,7 @@ describe("utils", () => {
     it("isAlreadySentToChain returns false when flag not set", () => {
       const signedDir = path.join(tmpDir, "ForDefiTxnFiles", "SignedTxns");
       fs.mkdirSync(signedDir, { recursive: true });
-      fs.writeFileSync(
-        path.join(signedDir, "unflagged.signedTx.json"),
-        JSON.stringify({ signature: "aa" })
-      );
+      fs.writeFileSync(path.join(signedDir, "unflagged.signedTx.json"), JSON.stringify({ signature: "aa" }));
       const origCwd = process.cwd();
       process.chdir(tmpDir);
       try {

@@ -17,11 +17,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Raised minimum supported Node.js version to 24 (`engines.node >= 24`).
 * Replaced `==`/`!=` with `===`/`!==` across the codebase.
 * Moved `typescript` and `rimraf` from dependencies to devDependencies.
-* Moved pnpm settings to `pnpm-workspace.yaml` (`engineStrict`, `nodeOptions`, `minimumReleaseAge`).
+* Moved pnpm settings to `pnpm-workspace.yaml` (`nodeOptions`, `minimumReleaseAge`).
+* Bumped `go-flare` Docker image to `v1.13.0`; uses v1.13's built-in localflare genesis instead of a custom `genesis.json`.
+* Filled in `LICENSE.md` with the MIT license text.
 
 ### Added
 
-* Unit test infrastructure with mocha, chai, nyc, and tsx (202 tests, 92% coverage on tested files).
+* Unit test infrastructure with mocha, chai, nyc, and tsx.
+* Integration test infrastructure with docker-compose against go-flare v1.13.0, covering CLI smoke checks, read-only commands, full signing lifecycle, and the public-key sign+send flow.
+* Restored test staker keys under `local/` for local network bootstrap.
+* `test:integration` script and `.mocharc.integration.yml`.
 * `CONTRIBUTING.md` with AI disclosure policy.
 * `SECURITY.md` with vulnerability reporting and review scope.
 * `CODEOWNERS` file.
@@ -29,6 +34,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `.nvmrc` and `pnpm-workspace.yaml` configuration files.
 * CI stages for linting, format checking, testing (with coverage), and building on every push.
 * `test`, `test:coverage`, `lint:check`, `lint:fix`, `format:check`, `format:fix` scripts.
+
+### Removed
+
+* Custom `genesis.json` (now using v1.13's built-in localflare genesis).
+* `.npmrc` (settings moved to `pnpm-workspace.yaml`).
+* Legacy ESLint packages (`@typescript-eslint/eslint-plugin`, `@typescript-eslint/parser`, `globals`).
 
 ## [[v4.2.2](https://github.com/flare-foundation/flare-stake-tool/releases/tag/v4.2.2)] - 2025-12-03
 

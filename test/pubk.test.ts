@@ -281,9 +281,7 @@ describe("flare/pubk", () => {
     it("recovers the correct public key from an eth-signed message", () => {
       const message = "hello flare";
       // Hash with eth prefix then sign
-      const hashedMsg = ethutil.keccakFromString(
-        `\x19Ethereum Signed Message:\n${message.length}${message}`
-      );
+      const hashedMsg = ethutil.keccakFromString(`\x19Ethereum Signed Message:\n${message.length}${message}`);
       const sig = ethutil.ecsign(hashedMsg, Buffer.from(SIGN_PRIVKEY, "hex"));
       const signature = toHex(Buffer.concat([sig.r, sig.s, Buffer.from([sig.v])]), false);
 

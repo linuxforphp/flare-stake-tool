@@ -1,0 +1,5 @@
+spec: "test/integration/**/*.test.ts"
+timeout: 180000
+exit: true
+node-option:
+  - "import=tsx"

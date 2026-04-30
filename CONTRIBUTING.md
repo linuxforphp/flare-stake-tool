@@ -93,6 +93,15 @@ Run with coverage report:
 pnpm test:coverage
 ```
 
+### Integration tests
+
+Integration tests spin up a local Flare network via docker-compose
+and exercise the CLI against real validators. They require Docker.
+
+```bash
+pnpm test:integration
+```
+
 ## Release process
 
 Releases are published to npm via GitLab CI when a semver git tag (e.g.

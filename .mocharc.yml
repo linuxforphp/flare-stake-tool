@@ -1,4 +1,6 @@
-spec: "test/**/*.test.ts"
+spec:
+  - "test/*.test.ts"
+  - "test/!(integration)/**/*.test.ts"
 timeout: 10000
 exit: true
 node-option:
