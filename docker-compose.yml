@@ -4,27 +4,26 @@ services:
 
   validator1:
     platform: linux/x86_64
-    image: flarefoundation/go-flare:v1.7.1805
+    image: flarefoundation/go-flare:v1.13.0
     environment:
       LOG_LEVEL: info
       NETWORK_ID: localflare
       AUTOCONFIGURE_PUBLIC_IP: 0
       AUTOCONFIGURE_BOOTSTRAP: 0
       PUBLIC_IP: 10.20.30.1
-      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker1.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker1.key --genesis=/app/avalanchego/genesis.json
+      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker1.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker1.key
     ports:
     - 9650:9650
     - 9651:9651
     volumes:
     - ./local:/app/avalanchego/staking/local
-    - ./genesis.json:/app/avalanchego/genesis.json
     networks:
       nodes:
         ipv4_address: 10.20.30.1
 
   validator2:
     platform: linux/x86_64
-    image: flarefoundation/go-flare:v1.7.1805
+    image: flarefoundation/go-flare:v1.13.0
     environment:
       LOG_LEVEL: info
       NETWORK_ID: localflare
@@ -33,19 +32,18 @@ services:
       PUBLIC_IP: 10.20.30.2
       BOOTSTRAP_IPS: 10.20.30.1:9651
       BOOTSTRAP_IDS: NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg
-      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker2.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker2.key --genesis=/app/avalanchego/genesis.json
+      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker2.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker2.key
     ports:
     - 5002:9650
     volumes:
     - ./local:/app/avalanchego/staking/local
-    - ./genesis.json:/app/avalanchego/genesis.json
     networks:
       nodes:
         ipv4_address: 10.20.30.2
 
   validator3:
     platform: linux/x86_64
-    image: flarefoundation/go-flare:v1.7.1805
+    image: flarefoundation/go-flare:v1.13.0
     environment:
       LOG_LEVEL: info
       NETWORK_ID: localflare
@@ -55,19 +53,18 @@ services:
       PUBLIC_IP: 10.20.30.3
       BOOTSTRAP_IPS: 10.20.30.1:9651
       BOOTSTRAP_IDS: NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg
-      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker3.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker3.key --genesis=/app/avalanchego/genesis.json
+      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker3.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker3.key
     ports:
     - 5003:9650
     volumes:
     - ./local:/app/avalanchego/staking/local
-    - ./genesis.json:/app/avalanchego/genesis.json
     networks:
       nodes:
         ipv4_address: 10.20.30.3
 
   validator4:
     platform: linux/x86_64
-    image: flarefoundation/go-flare:v1.7.1805
+    image: flarefoundation/go-flare:v1.13.0
     environment:
       LOG_LEVEL: info
       NETWORK_ID: localflare
@@ -76,19 +73,18 @@ services:
       PUBLIC_IP: 10.20.30.4
       BOOTSTRAP_IPS: 10.20.30.1:9651
       BOOTSTRAP_IDS: NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg
-      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker4.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker4.key --genesis=/app/avalanchego/genesis.json
+      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker4.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker4.key
     ports:
     - 5004:9650
     volumes:
     - ./local:/app/avalanchego/staking/local
-    - ./genesis.json:/app/avalanchego/genesis.json
     networks:
       nodes:
         ipv4_address: 10.20.30.4
 
   validator5:
     platform: linux/x86_64
-    image: flarefoundation/go-flare:v1.7.1805
+    image: flarefoundation/go-flare:v1.13.0
     environment:
       LOG_LEVEL: info
       NETWORK_ID: localflare
@@ -97,12 +93,11 @@ services:
       PUBLIC_IP: 10.20.30.5
       BOOTSTRAP_IPS: 10.20.30.1:9651
       BOOTSTRAP_IDS: NodeID-7Xhw2mDxuDS44j42TCB6U5579esbSt3Lg
-      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker5.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker5.key --genesis=/app/avalanchego/genesis.json
+      EXTRA_ARGUMENTS: --staking-tls-cert-file=/app/avalanchego/staking/local/staker5.crt --staking-tls-key-file=/app/avalanchego/staking/local/staker5.key
     ports:
     - 5005:9650
     volumes:
     - ./local:/app/avalanchego/staking/local
-    - ./genesis.json:/app/avalanchego/genesis.json
     networks:
       nodes:
         ipv4_address: 10.20.30.5
