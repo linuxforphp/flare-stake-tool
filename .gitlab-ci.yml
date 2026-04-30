@@ -83,6 +83,35 @@ test:
         coverage_format: cobertura
         path: coverage/cobertura-coverage.xml
 
+integration-test:
+  stage: test
+  image: node:24
+  services:
+    - name: docker:27-dind
+      alias: docker
+  variables:
+    DOCKER_HOST: tcp://docker:2375
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    - apt-get update && apt-get install -y --no-install-recommends docker.io docker-compose
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+  script:
+    - pnpm test:integration
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      changes:
+        - src/**/*
+        - test/integration/**/*
+        - bin/**/*
+        - docker-compose.yml
+        - package.json
+        - pnpm-lock.yaml
+        - tsconfig*.json
+    - if: $CI_COMMIT_BRANCH == "main"
+  interruptible: true
+  timeout: 15 minutes
+
 check-tag:
   stage: publish
   extends: .check-tag_template

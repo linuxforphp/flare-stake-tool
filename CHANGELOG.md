@@ -35,7 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `CODEOWNERS` file.
 * README header with Flare logo and navigation links.
 * `.nvmrc` and `pnpm-workspace.yaml` configuration files.
-* CI stages for linting, format checking, testing (with coverage), and building on every push.
+* CI stages for linting, format checking, testing (with coverage), and building on every push, plus a docker-in-docker integration-test job that runs on MRs and main pushes.
 * `test`, `test:coverage`, `lint:check`, `lint:fix`, `format:check`, `format:fix` scripts.
 
 ### Removed
