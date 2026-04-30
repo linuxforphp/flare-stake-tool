@@ -75,6 +75,15 @@ lint:
     - pnpm install --frozen-lockfile
   script:
     - pnpm lint:check
+
+format:
+  stage: check
+  image: node:24
+  <<: *test-rules
+  before_script:
+    - corepack enable pnpm
+    - pnpm install --frozen-lockfile
+  script:
     - pnpm format:check
 
 build:
