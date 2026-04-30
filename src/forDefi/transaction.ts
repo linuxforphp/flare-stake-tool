@@ -186,7 +186,7 @@ export async function getVaultPublickey(vaultId: string): Promise<string> {
   return pubKeyHex;
 }
 
-async function createVault(vaultName: string, tokenPath: string): Promise<string> {
+async function _createVault(vaultName: string, tokenPath: string): Promise<string> {
   const accessToken = readFileSync(tokenPath, "utf8");
 
   const requestJson = {

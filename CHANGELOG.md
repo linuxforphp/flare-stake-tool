@@ -21,6 +21,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * Bumped `go-flare` Docker image to `v1.13.0`; uses v1.13's built-in localflare genesis instead of a custom `genesis.json`.
 * Filled in `LICENSE.md` with the MIT license text.
 
+### Fixed
+
+* Type-aware lint failures in CI caused by missing `@types/node` and `@types/bn.js`, an undeclared transitive `@scure/base` dependency, and `preserveSymlinks: true` blocking type resolution through pnpm's symlinks (these were masked locally by accumulated `node_modules` state).
+* Trezor manifest missing the now-required `appName` field.
+* `TransportNodeHid` type incompatibility with `AvalancheApp`/`EthApp` constructors under `exactOptionalPropertyTypes` (cast through `unknown`).
+
 ### Added
 
 * Unit test infrastructure with mocha, chai, nyc, and tsx.
@@ -35,7 +41,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 * `CODEOWNERS` file.
 * README header with Flare logo and navigation links.
 * `.nvmrc` and `pnpm-workspace.yaml` configuration files.
-* CI stages for linting, format checking, testing (with coverage), and building on every push, plus a docker-in-docker integration-test job that runs on MRs and main pushes.
+* CI stages for linting, format checking, testing (with coverage), and building, plus a docker-in-docker integration-test job. `workflow:rules` and a reusable job-rules anchor ensure all jobs run on MRs and branch pushes (without duplicate pipelines), while integration-test is gated to MRs (with a `changes` filter) and the default branch.
 * `test`, `test:coverage`, `lint:check`, `lint:fix`, `format:check`, `format:fix` scripts.
 
 ### Removed

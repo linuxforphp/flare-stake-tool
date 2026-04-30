@@ -102,8 +102,11 @@ semantics. Changing one is unlikely to be applicable to the others.
 - `tsconfig.json` has `module: CommonJS` (not Node20) and **no
   `verbatimModuleSyntax`**. ESM migration is deferred until flarejs supports
   Node20 module resolution.
-- `preserveSymlinks: true` is required for pnpm to avoid duplicate type defs
-  from nested `.pnpm/.../node_modules/`.
+- `rootDir: "src"` is set in `tsconfig.build.json` only, not the base
+  `tsconfig.json`. The base tsconfig includes both `src` and `test` for
+  type-checking; setting `rootDir` there would cause TS6059 "file is not
+  under rootDir" errors that cascade into hundreds of `no-unsafe-*` lint
+  errors.
 
 ## Etna fork awareness
 
@@ -154,8 +157,10 @@ it — both example-based and property-based where applicable.
 - **Don't reintroduce `genesis.json`** — see "Local network" above.
 - **Don't bump `module` to `Node20`** without first verifying flarejs supports
   ESM module resolution. Last check: it does not.
-- **Don't remove `preserveSymlinks: true`** — pnpm's symlinked `node_modules`
-  causes duplicate type definitions otherwise.
+- **Don't add `preserveSymlinks: true` to tsconfig.** It blocks TypeScript from
+  resolving transitive types through pnpm's symlinked `node_modules` (e.g.
+  `web3-eth` from `web3`'s exports), producing hundreds of `no-unsafe-*` lint
+  errors in CI.
 - **Don't change the FLR→nFLR conversion in `getOptions()`** without updating
   every action handler that consumes `params.amount` / `params.fee` — they
   assume nFLR.

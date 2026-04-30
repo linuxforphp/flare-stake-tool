@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     // File Layout
-    "rootDir": "src",
     "outDir": "dist",
 
     // Environment Settings
@@ -22,8 +21,7 @@
     // Compatibility
     "esModuleInterop": true,
     "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "preserveSymlinks": true
+    "skipLibCheck": true
   },
   "include": ["src", "test"]
 }

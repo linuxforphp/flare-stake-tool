@@ -100,7 +100,10 @@ async function _connect(execute: (app: EthApp) => Promise<void>): Promise<void> 
   let eth;
   try {
     const transport = await TransportNodeHid.open(undefined);
-    eth = new EthApp(transport);
+    // Two ledger packages have slightly different Transport type definitions
+    // (abortTimeoutMs optional vs explicitly undefined-able under exactOptionalPropertyTypes).
+    // The runtime contract is identical.
+    eth = new EthApp(transport as unknown as ConstructorParameters<typeof EthApp>[0]);
     await execute(eth);
   } finally {
     if (eth && eth.transport) {

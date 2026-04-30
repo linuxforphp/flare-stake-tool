@@ -107,7 +107,10 @@ async function _connect(execute: (app: AvalancheApp) => Promise<void>): Promise<
   let avalanche: AvalancheApp | undefined = undefined;
   try {
     const transport = await TransportNodeHid.open(undefined);
-    avalanche = new AvalancheApp(transport);
+    // Two ledger packages have slightly different Transport type definitions
+    // (abortTimeoutMs optional vs explicitly undefined-able under exactOptionalPropertyTypes).
+    // The runtime contract is identical.
+    avalanche = new AvalancheApp(transport as unknown as ConstructorParameters<typeof AvalancheApp>[0]);
     await execute(avalanche);
   } finally {
     if (avalanche && avalanche.transport) {

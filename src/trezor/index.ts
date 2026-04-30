@@ -113,6 +113,7 @@ function _initialize() {
       manifest: {
         email: "developer@xyz.com",
         appUrl: "http://your.application.com",
+        appName: "flare-stake-tool",
       },
     })
       .then(() => {
