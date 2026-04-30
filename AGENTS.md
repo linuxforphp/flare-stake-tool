@@ -107,6 +107,10 @@ semantics. Changing one is unlikely to be applicable to the others.
   type-checking; setting `rootDir` there would cause TS6059 "file is not
   under rootDir" errors that cascade into hundreds of `no-unsafe-*` lint
   errors.
+- `node-pty` (used by interactive integration tests) ships prebuilt
+  native binaries, but pnpm strips the executable bit from the
+  `spawn-helper` binary during extraction. The interactive test harness
+  re-`chmod +x`s it before the first spawn — keep that workaround.
 
 ## Etna fork awareness
 

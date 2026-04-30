@@ -299,4 +299,5 @@ The prompts label amounts as "in FLR" and pass values through the same
 | Output | Same as the underlying commands |
 | Failures | Same as the underlying commands |
 
-Not automated in tests (would require pseudo-terminal scripting).
+Tested via `node-pty` in `test/integration/cli-interactive.test.ts` (balance check
+and stake flows).
