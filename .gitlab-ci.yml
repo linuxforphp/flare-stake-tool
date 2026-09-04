@@ -25,6 +25,7 @@ include:
       tags: [flarenetwork-md]
       before_script_additional: |
         apt-get update && apt-get install -y --no-install-recommends python3 make g++
+        pnpm config set cache-dir "$CI_PROJECT_DIR/.pnpm-cache"
       lint_commands: |
         pnpm lint:check
         pnpm format:check
@@ -35,5 +36,32 @@ include:
       tags: [flarenetwork-md]
       before_script_additional: |
         apt-get update && apt-get install -y --no-install-recommends python3 make g++
+        pnpm config set cache-dir "$CI_PROJECT_DIR/.pnpm-cache"
       test_commands: |
         pnpm test:coverage
+
+# Cache pnpm's lockfile supply-chain verdict alongside the store.
+#
+# trustPolicy: no-downgrade makes pnpm verify all 867 lockfile entries against
+# full packuments on every install (~11 min). pnpm memoises the verdict in
+# lockfile-verified.jsonl, keyed on the lockfile hash, so caching that one file
+# (~1 KB) skips the sweep while an actual lockfile or policy change still
+# forces a full re-verify. The component only caches .pnpm-store/, so cache-dir
+# defaults to ~/.cache/pnpm and is discarded after every job.
+#
+# A YAML anchor is used rather than `extends:` because the component's own
+# cache: block wins over an extends-supplied one on an included job.
+.pnpm_cache: &pnpm_cache
+  key:
+    files:
+      - pnpm-lock.yaml
+  paths:
+    - .pnpm-store/
+    - .pnpm-cache/lockfile-verified.jsonl
+  policy: pull-push
+
+lint:
+  cache: *pnpm_cache
+
+test:
+  cache: *pnpm_cache
