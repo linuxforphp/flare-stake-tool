@@ -85,7 +85,10 @@ semantics. Changing one is unlikely to be applicable to the others.
   the user input flows through `getOptions()` like any other.
 - The `--env-path` file uses `PRIVATE_KEY_HEX` (hex) and/or `PRIVATE_KEY_CB58`
   (base58check).
-- Network minimums: validator stake = delegator stake = 10,000 FLR (P-chain).
+- Network minimums (P-chain) differ per network — validator self-bond /
+  delegation: flare, songbird, costwo = 1,000,000 / 50,000; coston =
+  100,000 / 10,000. Verify against the chain rather than this file:
+  `platform.getMinStake` on `<api>/ext/bc/P`.
 - C-chain balances are in wei (1e18 per FLR), P-chain in nFLR (1e9 per FLR).
   See `dateToDateTimeLocalString`/`integerToDecimal` for display formatting
   (offset 18 for C-chain, 9 for P-chain).
